@@ -19,10 +19,10 @@
 
     <bean id="mysqlDataSource"
         class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="${jdbc.driverClassName}" />
-        <property name="url" value="${jdbc.mysql.url}" />
-        <property name="username" value="${jdbc.mysql.username}" />
-        <property name="password" value="${jdbc.mysql.password}" />
+        <property name="driverClassName" value="#{jdbc['driverClassName']}" />
+        <property name="url" value="#{jdbc['mysql.url']}" />
+        <property name="username" value="#{jdbc['mysql.username']}" />
+        <property name="password" value="#{jdbc['mysql.password']}" />
     </bean>
  
     <tx:annotation-driven transaction-manager="txManager" />
@@ -36,9 +36,17 @@
     </bean>
     
     <bean id="namedJdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">  
-        
         <constructor-arg name="dataSource" ref="mysqlDataSource" />
-        
 	</bean>
+	
+	<bean id="mySqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">  
+        <property name="dataSource" ref="mysqlDataSource"></property>  
+        <property name="configLocation" value="classpath:mybatis-config.xml" />   
+    </bean> 
+    
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">  
+        <property name="basePackage" value="com.shizuwei.dal.main.mapper"></property>  
+        <property name="sqlSessionFactory" ref="mySqlSessionFactory"></property>  
+    </bean>   
 
 </beans>

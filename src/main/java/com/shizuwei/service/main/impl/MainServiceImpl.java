@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.shizuwei.dal.main.dao.OrderDao;
 import com.shizuwei.dal.main.po.DetailOrder;
+import com.shizuwei.dal.main.po.OrderStastics;
 import com.shizuwei.service.dto.OrderListResponseDto;
 import com.shizuwei.service.dto.request.OrderListReqestDto;
 import com.shizuwei.service.main.MainService;
@@ -20,8 +21,9 @@ public class MainServiceImpl implements MainService {
 	public OrderListResponseDto getOrderListInfo(OrderListReqestDto request) {
 		OrderListResponseDto responseDto = new OrderListResponseDto();
 		List<DetailOrder> orderList = orderDao.getDetailOrderList(request);
-		orderList.forEach( item -> responseDto.calcStatstic(item));
+		OrderStastics stastics = orderDao.getOrderStastics(request);
 		responseDto.setDetailOrderList(orderList);
+		responseDto.setStastics(stastics);
 		return responseDto;
 	}
 }

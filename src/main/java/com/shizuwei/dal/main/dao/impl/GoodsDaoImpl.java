@@ -15,6 +15,7 @@ import com.shizuwei.dal.main.po.Goods;
 public class GoodsDaoImpl implements GoodsDao {
 	@Resource
 	private NamedParameterJdbcTemplate namedJdbcTemplate;
+
 	@Override
 	public List<Goods> getGoodsList() {
 		String sql = "select * from webdata.goods";

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -20,6 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.shizuwei.controller.common.dto.PageDto;
+import com.shizuwei.dal.main.constants.GoodsStatus;
 import com.shizuwei.dal.main.constants.OrderStatus;
 import com.shizuwei.dal.main.dao.BrandDao;
 import com.shizuwei.dal.main.dao.OrderDao;
@@ -28,6 +30,7 @@ import com.shizuwei.dal.main.po.Brand;
 import com.shizuwei.dal.main.po.DetailOrder;
 import com.shizuwei.dal.main.po.Goods;
 import com.shizuwei.dal.main.po.Order;
+import com.shizuwei.dal.main.po.OrderStastics;
 import com.shizuwei.dal.main.po.User;
 import com.shizuwei.service.dto.request.OrderListReqestDto;
 
@@ -50,33 +53,39 @@ public class OrderDaoImpl implements OrderDao {
 		SqlParameterSource paramSource = new BeanPropertySqlParameterSource(param);
 		return namedJdbcTemplate.queryForObject(sql, paramSource, new BeanPropertyRowMapper<Order>(Order.class));
 	}
-	 
 
 	@Override
 	public List<DetailOrder> getDetailOrderList(OrderListReqestDto request) {
 
 		Integer brandId = null;
 		Integer userId = null;
-		
+
 		if (request.getBrand() != null) {
 			brandDao.fillBrandId(request.getBrand());
 			brandId = request.getBrand().getId();
 		}
-		
+
 		if (request.getUser() != null) {
 			userDao.fillUserId(request.getUser());
 			userId = request.getUser().getId();
 		}
 
+		if (request.getUser() != null && StringUtils.isNoneBlank(request.getUser().getAccountNumber())
+				&& userId == null) {
+			return Lists.newArrayList();
+		}
+
 		OrderListSqlBuilder sqlBuilder = new OrderListSqlBuilder(request, brandId, userId, request.getPageDto());
-		
-		if(request.getPageDto() != null){
-			Integer totalCount = this.namedJdbcTemplate.queryForObject(sqlBuilder.getCountSql(), sqlBuilder.getParmMap(), Integer.class);
+
+		if (request.getPageDto() != null) {
+			Integer totalCount = this.namedJdbcTemplate.queryForObject(sqlBuilder.getCountSql(),
+					sqlBuilder.getParmMap(), Integer.class);
+			logger.debug("totalCount = {}", totalCount);
 			request.getPageDto().setCount(totalCount);
 		}
-		
+
 		sqlBuilder = new OrderListSqlBuilder(request, brandId, userId, request.getPageDto());
-		
+
 		List<DetailOrder> list = Lists.newArrayList();
 		this.namedJdbcTemplate.query(sqlBuilder.getSql(), sqlBuilder.getParmMap(), new RowCallbackHandler() {
 
@@ -125,13 +134,52 @@ public class OrderDaoImpl implements OrderDao {
 				order.setOrderStatus(rs.getInt("order_status"));
 				order.setTotalPrice(rs.getLong("total_price"));
 				order.setUserId(rs.getInt("user_id"));
-
+				order.setDiscription(rs.getString("discription"));
 				list.add(detailOrder);
 			}
 
 		});
 		logger.info(list.toString());
 		return list;
+	}
+
+	@Override
+	public OrderStastics getOrderStastics(Integer userId) {
+		OrderStastics stastics = new OrderStastics();
+		String orderStatusSql = "SELECT SUM(1) as sum, SUM(total_price) as total from webdata.`order` WHERE order_status = :orderStatus "
+				+ (userId != null ? "and user_id = :userId" : "");
+		String goodsStatusSql = "SELECT SUM(1) from webdata.`order` WHERE goods_status = :goodsStatus "
+				+ (userId != null ? "and user_id = :userId" : "");
+		logger.debug("orderStatusSql = {}", orderStatusSql);
+		logger.debug("goodsStatusSql = {}", goodsStatusSql);
+		Map<String, Object> paramMap = Maps.newHashMap();
+		paramMap.put("userId", userId);
+		paramMap.put("orderStatus", OrderStatus.PAYED.getCode());
+		Map<String, Object> orderStastic = this.namedJdbcTemplate.queryForMap(orderStatusSql, paramMap);
+		stastics.setPayedCount(Integer.valueOf(orderStastic.get("sum").toString()));
+		stastics.setPayedMoneySum(Long.valueOf(orderStastic.get("total").toString()));
+		paramMap.put("orderStatus", OrderStatus.UNPAY.getCode());
+		orderStastic = this.namedJdbcTemplate.queryForMap(orderStatusSql, paramMap);
+		stastics.setUnPayedCount(Integer.valueOf(orderStastic.get("sum").toString()));
+		stastics.setUnPayedMoneySum(Long.valueOf(orderStastic.get("total").toString()));
+		paramMap.put("goodsStatus", GoodsStatus.ARRIVED.getCode());
+		stastics.setArrivedCount(this.namedJdbcTemplate.queryForObject(goodsStatusSql, paramMap, Integer.class));
+		paramMap.put("goodsStatus", GoodsStatus.NOT_ARRIVED.getCode());
+		stastics.setNotArrivedCount(this.namedJdbcTemplate.queryForObject(goodsStatusSql, paramMap, Integer.class));
+		paramMap.put("goodsStatus", GoodsStatus.SEND.getCode());
+		stastics.setSendCount(this.namedJdbcTemplate.queryForObject(goodsStatusSql, paramMap, Integer.class));
+		logger.debug("stastics = {}", stastics);
+		return stastics;
+	}
+
+	@Override
+	public OrderStastics getOrderStastics(OrderListReqestDto request) {
+		Integer userId = null;
+		if (request.getUser() != null) {
+			userDao.fillUserId(request.getUser());
+			userId = request.getUser().getId();
+		}
+		return getOrderStastics(userId);
 	}
 
 	private static class OrderListSqlBuilder {
@@ -141,6 +189,7 @@ public class OrderDaoImpl implements OrderDao {
 		private StringBuilder sqlBuiler = new StringBuilder("FROM webdata.`order` o "
 				+ "JOIN webdata.`user` u ON u.id = o.user_id " + "JOIN webdata.goods g ON g.id = o.goods_id "
 				+ "JOIN webdata.brand b ON b.id = g.brand_id where 1 = 1 ");
+
 		public OrderListSqlBuilder(OrderListReqestDto request, Integer brandId, Integer userId, PageDto pageDto) {
 
 			if (brandId != null) {
@@ -149,7 +198,7 @@ public class OrderDaoImpl implements OrderDao {
 			}
 
 			if (userId != null) {
-				sqlBuiler.append("AND g.user_id = :userId ");
+				sqlBuiler.append("AND o.user_id = :userId ");
 				paramMap.put("userId", userId);
 			}
 			if (request.getPayTimeEnd() != null) {
@@ -163,16 +212,16 @@ public class OrderDaoImpl implements OrderDao {
 			}
 
 			if (request.getOrderStatus() != null) {
-				sqlBuiler.append("AND o.status = :orderStatus ");
+				sqlBuiler.append("AND o.order_status = :orderStatus ");
 				paramMap.put("orderStatus", request.getOrderStatus().getCode());
 			}
 
 			if (request.getGoodsStatus() != null) {
-				sqlBuiler.append("AND g.status = :goodsStatus ");
+				sqlBuiler.append("AND o.goods_status = :goodsStatus ");
 				paramMap.put("goodsStatus", request.getGoodsStatus().getCode());
 			}
-			
-			if(pageDto != null && pageDto.getCount().intValue() > 0){
+
+			if (pageDto != null && pageDto.getCount().intValue() > 0) {
 				sqlBuiler.append("limit :firstNum, :curPageCount ");
 				paramMap.put("firstNum", pageDto.firstNum());
 				paramMap.put("curPageCount", pageDto.getCurPageCount());
@@ -185,8 +234,8 @@ public class OrderDaoImpl implements OrderDao {
 			logger.debug(sql);
 			return sql;
 		}
-		
-		public String getCountSql(){
+
+		public String getCountSql() {
 			String sql = countParams + this.sqlBuiler.toString();
 			logger.debug(sql);
 			return sql;

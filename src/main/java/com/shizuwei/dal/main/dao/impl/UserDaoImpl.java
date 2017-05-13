@@ -18,17 +18,22 @@ import org.springframework.stereotype.Repository;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.shizuwei.dal.main.dao.UserDao;
+import com.shizuwei.dal.main.mapper.UserMapper;
 import com.shizuwei.dal.main.po.User;
 
 @Repository
 public class UserDaoImpl implements UserDao {
 	@Resource
 	private NamedParameterJdbcTemplate namedJdbcTemplate;
+	@Resource
+	private UserMapper userMapper;
 
 	@Override
 	public List<User> getUserList() {
-		String sql = "select * from webdata.user";
-		return namedJdbcTemplate.query(sql, new BeanPropertyRowMapper<User>(User.class));
+		// String sql = "select * from webdata.user";
+		// return namedJdbcTemplate.query(sql, new
+		// BeanPropertyRowMapper<User>(User.class));
+		return userMapper.listAll();
 	}
 
 	@Override
@@ -56,8 +61,8 @@ public class UserDaoImpl implements UserDao {
 		String accountNumber = user.getAccountNumber();
 		Preconditions.checkArgument(StringUtils.isNotBlank(accountNumber));
 		Map<String, Object> paramMap = Maps.newHashMap();
-		String sql = "select * from webdata.brand where account_number = :accountNumber";
-		paramMap.put("name", accountNumber);
+		String sql = "select * from webdata.user where account_number = :accountNumber";
+		paramMap.put("accountNumber", accountNumber);
 		namedJdbcTemplate.query(sql, paramMap, new RowCallbackHandler() {
 
 			@Override

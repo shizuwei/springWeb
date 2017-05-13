@@ -24,6 +24,7 @@ import com.shizuwei.dal.main.po.Brand;
 public class BrandDaoImpl implements BrandDao {
 	@Resource
 	private NamedParameterJdbcTemplate namedJdbcTemplate;
+
 	@Override
 	public List<Brand> getBrandList() {
 		String sql = "select * from webdata.brand";
@@ -31,8 +32,8 @@ public class BrandDaoImpl implements BrandDao {
 	}
 
 	@Override
-	public Brand getBrandByName(String brandName){
-		if(StringUtils.isEmpty(brandName)){
+	public Brand getBrandByName(String brandName) {
+		if (StringUtils.isEmpty(brandName)) {
 			return null;
 		}
 		String sql = "select * from webdata.brand where brand_name = :brandName";
@@ -42,7 +43,7 @@ public class BrandDaoImpl implements BrandDao {
 		return namedJdbcTemplate.queryForObject(sql, paramSource, new BeanPropertyRowMapper<Brand>(Brand.class));
 
 	}
-	
+
 	@Override
 	public void fillBrandId(Brand brand) {
 

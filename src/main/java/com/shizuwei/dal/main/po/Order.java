@@ -63,5 +63,10 @@ public class Order {
 		this.goodsStatus = goodsStatus;
 		this.goodsStatusStr = GoodsStatus.byCode(goodsStatus.intValue()).getNote();
 	}
+	
+	/**
+	 * 描述
+	 */
+	private String discription;
 
 }

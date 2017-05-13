@@ -103,7 +103,7 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>6.0.5</version>
+			<version>5.1.26</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
@@ -143,7 +143,24 @@
 		    <artifactId>guava</artifactId>
 		    <version>20.0</version>
 		</dependency>
-		
+		<!-- https://mvnrepository.com/artifact/joda-time/joda-time -->
+		<dependency>
+		    <groupId>joda-time</groupId>
+		    <artifactId>joda-time</artifactId>
+		    <version>2.9.9</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
+		<dependency>
+		    <groupId>org.mybatis</groupId>
+		    <artifactId>mybatis</artifactId>
+		    <version>3.4.4</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis-spring -->
+		<dependency>
+		    <groupId>org.mybatis</groupId>
+		    <artifactId>mybatis-spring</artifactId>
+		    <version>1.3.1</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>SpringWeb</finalName>
