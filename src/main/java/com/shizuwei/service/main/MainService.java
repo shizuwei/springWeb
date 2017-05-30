@@ -1,8 +1,12 @@
 package com.shizuwei.service.main;
 
-import com.shizuwei.service.dto.OrderListResponseDto;
-import com.shizuwei.service.dto.request.OrderListReqestDto;
+import com.shizuwei.controller.dto.OrderInfoListRequestDto;
+import com.shizuwei.dal.common.page.PageBean;
+import com.shizuwei.dal.main.po.Order;
 
 public interface MainService {
-	OrderListResponseDto getOrderListInfo(OrderListReqestDto request);
+	 
+	PageBean<Order> listOrder(OrderInfoListRequestDto infoRequst);
+	
+	
 }

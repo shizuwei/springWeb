@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shizuwei.dal.main.dao.GoodsMapper">
+	<insert id="insert" parameterType="Goods">
+		insert into
+		goods(goods_name,price,brand_id,img_url,good_number,size)
+		values(#{goodsName},#{price,jdbcType=NUMERIC},#{brandId,jdbcType=NUMERIC},#{imgURL,jdbcType=VARCHAR},#{goodNumber,jdbcType=VARCHAR},#{size,jdbcType=VARCHAR})
+	</insert>
+
+	<update id="update" parameterType="Goods">
+		update goods
+		<set>
+			<if test="goods_name != null">goods_name=#{goodsName},</if>
+			<if test="price != null">price=#{price}</if>
+			<if test="brand_id != null">brand_id=#{brandId}</if>
+			<if test="img_url != null">img_url=#{imgURL}</if>
+			<if test="good_number != null">good_number=#{goodNumber}</if>
+			<if test="size != null">size=#{size}</if>
+		</set>
+		where goods_id=#{id}
+	</update>
+
+	<delete id="delete" parameterType="int">
+		delete from goods where
+		goods_id=#{id}
+	</delete>
+
+	<!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->
+	<select id="getById" parameterType="int" resultType="Goods">
+		select *
+		from goods where goods_id=#{id}
+	</select>
+
+	<resultMap type="Goods" id="listMap">
+		<id property="id" column="goods_id" />
+		<result property="goodsName" column="goods_name" />
+		<result property="price" column="price" />
+		<result property="brandId" column="brand_id" />
+		<result property="good_number" column="goodNumber" />
+		<result property="imgURL" column="img_url" />
+		<result property="size" column="size" />
+	</resultMap>
+
+	<select id="list" parameterType="Goods" resultMap="listMap">
+		select * from goods
+		<where>
+			<if test="goodsName!=null">
+				and goods_name like '%#{goodsName}%'
+			</if>
+			<if test="brandId!=null">
+				and brand_id = #{brandId}
+			</if>
+			<if test="goodNumber!=null">
+				and good_number = #{goodNumber}
+			</if>
+			<if test="size!=null">
+				and size = #{size}
+			</if>
+		</where>
+		order by update_time desc
+	</select>
+
+</mapper>

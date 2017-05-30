@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shizuwei.dal.main.dao.OrderMapper">
+
+	<insert id="insert" parameterType="Order">
+		insert into
+		order(user_id,order_time,discription)
+		values(#{userId},#{orderTime},#{discription})
+	</insert>
+
+	<update id="update" parameterType="Order">
+		update order
+		<set>
+			<if test="user_id != null">user_id=#{userId},</if>
+			<if test="pay_time != null">pay_time=#{payTime}</if>
+			<if test="order_time != null">order_time=#{orderTime}</if>
+			<if test="total_price != null">order_total_price=#{orderTotalPrice}</if>
+			<if test="order_status != null">order_status=#{orderStatus}</if>
+			<if test="goods_status != null">goods_status=#{goodsStatus}</if>
+			<if test="discription != null">discription=#{discription}</if>
+		</set>
+		where id=#{id}
+	</update>
+
+	<delete id="delete" parameterType="int">
+		delete from order where
+		id=#{id}
+	</delete>
+
+	<select id="getById" parameterType="int" resultType="Order">
+		select *
+		from order where id=#{id}
+	</select>
+
+	<resultMap type="Order" id="listMap">
+		<id property="id" column="order_id" />
+		<result property="userId" column="user_id" />
+		<result property="payTime" column="pay_time" />
+		<result property="orderTime" column="order_time" />
+		<result property="orderTotalPrice" column="order_total_price" />
+		<result property="orderStatus" column="order_status" />
+		<result property="goodsStatus" column="goods_status" />
+		<result property="discription" column="discription" />
+		<collection property="goodsList" resultMap="orderGoodsMap" />
+	</resultMap>
+
+	<resultMap id="goodsMap" type="Goods">
+		<id property="id" column="goods_id" />
+		<result property="goodsName" column="goods_name" />
+		<result property="price" column="price" />
+		<result property="brandId" column="brand_id" />
+		<result property="good_number" column="goodNumber" />
+		<result property="imgURL" column="img_url" />
+		<result property="size" column="size" />
+	</resultMap>
+
+	<resultMap id="orderGoodsMap" type="OrderGoods">
+		<id property="orderGoodsId" column="order_goods_id" />
+		<result property="orderId" column="order_id" />
+		<result property="goodsId" column="goods_id" />
+		<result property="goodsCnt" column="goods_cnt" />
+		<result property="goodsFeight" column="goods_feight" />
+		<result property="totalPrice" column="total_price" />
+		<result property="description" column="description" />
+		<association property="goods" javaType="Goods" resultMap="goodsMap" />
+	</resultMap>
+
+	<sql id="selectFromSql">
+		from webdata.order o
+		left join order_goods og
+		ON
+		og.order_id = o.order_id
+		left join goods g
+		ON
+		og.goods_id = g.goods_id
+	</sql>
+	
+	<sql id="selectWhereSql">
+		<where>
+			<if test="userId!=null">
+				and user_id = #{userId}
+			</if>
+			<if test="orderStatus!=null">
+				and order_status = #{orderStatus}
+			</if>
+			<if test="goodsStatus!=null">
+				and goods_status = #{goodsStatus}
+			</if>
+			<if test="discription!=null">
+				and discription like '%#{discription}%'
+			</if>
+		</where>
+	</sql>
+
+	<select id="listWithGoods" parameterType="Order" resultMap="listMap">
+		select *
+		<include refid="selectFromSql" />
+		<include refid="selectWhereSql" />
+		order by order_time desc
+	</select>
+
+	<select id="listOrderIds" parameterType="Order" resultType="int">
+		select o.order_id 
+		<include refid="selectFromSql" />
+		<include refid="selectWhereSql" />
+		order by order_time desc
+	</select>
+
+	<select id="listWithGoodsByIds" parameterType="java.util.List"
+		resultMap="listMap">
+		select * 
+		<include refid="selectFromSql" />
+		<where>
+			<if test="list != null and list.size() > 0">
+				o.order_id in
+				<foreach item="item" index="index" collection="list" open="("
+					separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+		order by order_time desc
+	</select>
+
+</mapper>

@@ -1,52 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-    xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:util="http://www.springframework.org/schema/util"
-    xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
-    xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
         http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
- 
-    <context:annotation-config />
-    <context:component-scan base-package="com.shizuwei.service.*" />
-    <context:component-scan base-package="com.shizuwei.dal.*" />
- 
-    <import resource="jdbc.xml" />
- 
 
-    <bean id="mysqlDataSource"
-        class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="#{jdbc['driverClassName']}" />
-        <property name="url" value="#{jdbc['mysql.url']}" />
-        <property name="username" value="#{jdbc['mysql.username']}" />
-        <property name="password" value="#{jdbc['mysql.password']}" />
-    </bean>
- 
-    <tx:annotation-driven transaction-manager="txManager" />
-    <bean id="txManager"
-         class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-         <property name="dataSource" ref="mysqlDataSource"/>  
-    </bean>
-   
-    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-        <property name="dataSource" ref="mysqlDataSource" />
-    </bean>
-    
-    <bean id="namedJdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">  
-        <constructor-arg name="dataSource" ref="mysqlDataSource" />
+	<context:annotation-config />
+	<context:component-scan base-package="com.shizuwei.service.*" />
+	<context:component-scan base-package="com.shizuwei.dal.*" />
+
+	<import resource="jdbc.xml" />
+
+
+	<bean id="mysqlDataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="#{jdbc['driverClassName']}" />
+		<property name="url" value="#{jdbc['mysql.url']}" />
+		<property name="username" value="#{jdbc['mysql.username']}" />
+		<property name="password" value="#{jdbc['mysql.password']}" />
+	</bean>
+
+	<tx:annotation-driven transaction-manager="txManager" />
+	<bean id="txManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="mysqlDataSource" />
+	</bean>
+
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="mysqlDataSource" />
+	</bean>
+
+	<bean id="namedJdbcTemplate"
+		class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
+		<constructor-arg name="dataSource" ref="mysqlDataSource" />
+	</bean>
+
+
+	<!--mybatis config -->
+
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="mysqlDataSource"></property>
+		<property name="configLocation" value="classpath:mybatis-config.xml" />
+		<property name="mapperLocations" value="classpath:com/shizuwei/dal/main/dao/*.xml" />
+	</bean>
+
+	<bean id="baseMapper" class="org.mybatis.spring.mapper.MapperFactoryBean"
+		abstract="true" lazy-init="true">
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+
+	<bean id="userMapper" parent="baseMapper">
+		<property name="mapperInterface" value="com.shizuwei.dal.main.dao.UserMapper" />
+	</bean>
+
+	<bean id="goodsMapper" parent="baseMapper">
+		<property name="mapperInterface" value="com.shizuwei.dal.main.dao.GoodsMapper" />
 	</bean>
 	
-	<bean id="mySqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">  
-        <property name="dataSource" ref="mysqlDataSource"></property>  
-        <property name="configLocation" value="classpath:mybatis-config.xml" />   
-    </bean> 
-    
-    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">  
-        <property name="basePackage" value="com.shizuwei.dal.main.mapper"></property>  
-        <property name="sqlSessionFactory" ref="mySqlSessionFactory"></property>  
-    </bean>   
+	<bean id="orderMapper" parent="baseMapper">
+		<property name="mapperInterface" value="com.shizuwei.dal.main.dao.OrderMapper" />
+	</bean>
+	
+	<bean id="brandMapper" parent="baseMapper">
+		<property name="mapperInterface" value="com.shizuwei.dal.main.dao.BrandMapper" />
+	</bean>
+	
+
+	<!-- <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer"> <property 
+		name="basePackage" value="com.shizuwei.dal.main.dao"></property> <property 
+		name="sqlSessionFactory" ref="sqlSessionFactory"></property> </bean> -->
 
 </beans>

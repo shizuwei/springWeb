@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shizuwei.dal.main.dao.BrandMapper">
+
+	<insert id="insert" parameterType="Brand">
+		insert into
+		brand(brand_name)
+		values(#{brandName})
+	</insert>
+
+	<update id="update" parameterType="Brand">
+		update brand
+		<set>
+			<if test="brand_name != null">brand_name=#{brandName}</if>
+		</set>
+		where id=#{id}
+	</update>
+
+	<delete id="delete" parameterType="int">
+		delete from brand where
+		id=#{id}
+	</delete>
+
+	<select id="getById" parameterType="int" resultType="Brand">
+		select *
+		from brand where id=#{id}
+	</select>
+
+	<resultMap type="Brand" id="listMap">
+		<id property="id" column="brand_id" />
+		<result property="brandName" column="brand_name" />
+	</resultMap>
+
+	<select id="list" parameterType="Brand" resultMap="listMap">
+		select * from brand
+		<where>
+			<if test="brandName!=null">
+				and brand_name like '%#{brandName}%'
+			</if>
+		</where>
+		order by update_time desc
+	</select>
+
+</mapper>

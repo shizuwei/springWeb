@@ -6,6 +6,7 @@
 	<settings>  
         <!-- 是否启用 数据中 a_column 自动映射 到 java类中驼峰命名的属性。[默认:false] -->  
         <setting name="mapUnderscoreToCamelCase" value="true" />  
+        <setting name="jdbcTypeForNull" value="NULL" />
     </settings>  
   
     <!-- 实体类,简称 -设置别名 -->  
@@ -17,8 +18,12 @@
     <!-- 
         说明：如果xxMapper.xml配置文件放在和xxMapper.java统一目录下，mappers也可以省略，因为org.mybatis.spring.mapper.MapperFactoryBean默认会去查找与xxMapper.java相同目录和名称的xxMapper.xml 
     -->  
-    <mappers>  
-         <package name="com.shizuwei.dal.main.mapper"/>
-    </mappers>  
-  
+<!--     <mappers>   -->
+<!--          <package name="com.shizuwei.dal.main.dao"/> -->
+<!--     </mappers>   -->
+	<plugins>
+	    <plugin interceptor="com.github.pagehelper.PageInterceptor">
+	        <property name="helperDialect" value="mysql"/>
+		</plugin>
+	</plugins>
 </configuration>    

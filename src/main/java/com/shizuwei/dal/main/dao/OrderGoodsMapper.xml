@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.shizuwei.dal.main.dao.OrderGoodsMapper"> 
+
+	<insert id="insert" parameterType="Order">  
+        insert into order(user_id,order_time,discription) 
+        values(#{userId},#{orderTime},#{discription})  
+    </insert>  
+      
+    <update id="update" parameterType="Order">  
+        update order 
+        <set>
+        	<if test="user_id != null">user_id=#{userId},</if>
+        	<if test="pay_time != null">pay_time=#{payTime}</if>
+        	<if test="order_time != null">order_time=#{orderTime}</if>
+        	<if test="total_price != null">total_price=#{totalPrice}</if>
+        	<if test="order_status != null">order_status=#{orderStatus}</if>
+        	<if test="goods_status != null">goods_status=#{goodsStatus}</if>
+        	<if test="discription != null">discription=#{discription}</if>
+        </set>
+        where id=#{id}
+    </update>  
+      
+    <delete id="delete" parameterType="int">  
+        delete from order where id=#{id}  
+    </delete>  
+      
+     <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->    
+    <select id="getById" parameterType="int" resultType="Order">  
+        select * from order where id=#{id}  
+    </select>  
+    
+</mapper>

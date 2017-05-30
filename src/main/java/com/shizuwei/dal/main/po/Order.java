@@ -1,6 +1,7 @@
 package com.shizuwei.dal.main.po;
 
 import java.sql.Date;
+import java.util.List;
 
 import com.shizuwei.dal.main.constants.GoodsStatus;
 import com.shizuwei.dal.main.constants.OrderStatus;
@@ -17,26 +18,11 @@ public class Order {
 	 * 用户
 	 */
 	private Integer userId;
-	/**
-	 * 购买的商品
-	 */
-	private Integer goodsId;
-	/**
-	 * 数量 单位：个
-	 */
-	private Integer count;
-	/**
-	 * 运费 单位：分
-	 */
-	private Long freight;
-	/**
-	 * 汇率 %
-	 */
-	private Integer exchangeRate;
+
 	/**
 	 * 总价 单位： 分
 	 */
-	private Long totalPrice;
+	private Long orderTotalPrice;
 	/**
 	 * 付钱时间
 	 */
@@ -49,24 +35,31 @@ public class Order {
 	 * 状态 已经付款：1， 未付款：0
 	 */
 	private Integer orderStatus;
-	
+
 	private String orderStatusStr;
-	
-	public void setOrderStatus(Integer orderStatus){
+
+	public void setOrderStatus(Integer orderStatus) {
 		this.orderStatus = orderStatus;
-		this.orderStatusStr = OrderStatus.byCode(orderStatus.intValue()).getNote();
+		if (orderStatus != null) {
+			this.orderStatusStr = OrderStatus.byCode(orderStatus.intValue()).getNote();
+		}
 	}
-	
+
 	private Integer goodsStatus;
 	private String goodsStatusStr;
-	public void setGoodsStatus(Integer goodsStatus){
+
+	public void setGoodsStatus(Integer goodsStatus) {
 		this.goodsStatus = goodsStatus;
-		this.goodsStatusStr = GoodsStatus.byCode(goodsStatus.intValue()).getNote();
+		if (goodsStatus != null) {
+			this.goodsStatusStr = GoodsStatus.byCode(goodsStatus.intValue()).getNote();
+		}
 	}
-	
+
 	/**
 	 * 描述
 	 */
 	private String discription;
+
+	private List<OrderGoods> goodsList;
 
 }
