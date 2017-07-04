@@ -11,7 +11,7 @@ import lombok.ToString;
 public class PageBean<T> implements Serializable {
 
 	private static final long serialVersionUID = 8656597559014685635L;
-	private long total; // 总记录数
+	private int total; // 总记录数
 	private List<T> list; // 结果集
 	private int pageNum; // 第几页
 	private int pageSize; // 每页记录数
@@ -45,17 +45,17 @@ public class PageBean<T> implements Serializable {
 	protected void setPateInfo(Page<T> page) {
 		this.pageNum = page.getPageNum();
 		this.pageSize = page.getPageSize();
-		this.total = page.getTotal();
+		this.total = (int)page.getTotal();
 		this.pages = page.getPages();
 		this.list = page;
 		this.size = page.size();
 	}
 
-	public long getTotal() {
+	public int getTotal() {
 		return total;
 	}
 
-	public void setTotal(long total) {
+	public void setTotal(int total) {
 		this.total = total;
 	}
 

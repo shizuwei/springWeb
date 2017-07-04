@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class User {
-	private Integer id;
+	private Integer userId;
 	private String wxName;
 	private String accountNumber;
 	
@@ -18,7 +18,7 @@ public class User {
 	}
 
 	public User(Integer id, String wxName, String accountNumber) {
-		this.id = id;
+		this.userId = id;
 		this.wxName = wxName;
 		this.accountNumber = accountNumber;
 	}

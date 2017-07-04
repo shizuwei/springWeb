@@ -2,8 +2,10 @@ package com.shizuwei.dal.main.constants;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.common.collect.Maps;
 
+@JsonFormat(shape= JsonFormat.Shape.OBJECT)
 public enum GoodsStatus {
 	
 	NOT_ARRIVED(0, "未到货"),

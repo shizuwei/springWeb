@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shizuwei.dal.main.dao.ImgMapper">
+
+	<resultMap type="Img" id="baseImgMap">
+		<id property="imgId" column="img_id" />
+		<result property="imgName" column="img_name" />
+		<result property="imgUrl" column="img_url" />
+		<result property="folder" column="folder" />
+	</resultMap>
+	
+	<select id="getById" parameterType="int" resultType="Img">
+		select *
+		from img where img_id=#{imgId}
+	</select>
+	
+	<select id="getByIds" parameterType="list" resultMap="baseImgMap">
+		select *
+		from img where img_id in 
+		<foreach item="id" index="index" collection="list" 
+                         open="(" separator="," close=")">
+                        #{id}
+        </foreach>
+	</select>
+	
+	<select id="list" parameterType="Img" resultMap="baseImgMap">
+		select * from img
+		<where>
+			<if test="imgId != null">
+				and img_id = #{imgId}
+			</if>
+			<if test="imgName != null">
+				and img_name like '%#{imgName}%'
+			</if>
+			<if test="imgUrl != null">
+				and img_url = #{imgUrl}
+			</if>
+			<if test="folder !=null">
+				and folder = #{folder}
+			</if>
+		</where>
+		order by update_time desc
+	</select>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="imgId" parameterType="Img">
+		insert into
+		img(img_name,
+		img_url,folder)
+		values(#{imgName,jdbcType=VARCHAR},#{imgUrl,jdbcType=VARCHAR},#{folder,jdbcType=VARCHAR})
+	</insert>
+	
+	<delete id="delById" parameterType="int">
+		delete from img where
+		img_id=#{id}
+	</delete>
+
+	<update id="update" parameterType="Img">
+		update img
+		<set>
+			<if test="imgName != null">img_name=#{imgName},</if>
+			<if test="imgUrl != null">img_url=#{imgUrl}</if>
+			<if test="folder != null">folder=#{folder}</if>
+		</set>
+		where img_id=#{imgId}
+	</update>
+
+	<resultMap type="OrderInfo" id="ordersMap"  extends="com.shizuwei.dal.main.dao.OrderMapper.baseOrderMap">
+		<association property="user" notNullColumn="user_id" javaType="User" resultMap="com.shizuwei.dal.main.dao.UserMapper.baseUserMap" />
+		<collection property="orderGoods" notNullColumn="order_goods_id" resultMap="com.shizuwei.dal.main.dao.OrderGoodsMapper.baseOrderGoodsMap" />	
+	</resultMap>
+	
+	<resultMap id="goodsInfoMap" type="GoodsInfo" extends="com.shizuwei.dal.main.dao.GoodsMapper.baseGoodsMap">
+		<collection property="orders" notNullColumn="order_id" resultMap="ordersMap" />
+	</resultMap>
+	
+	<resultMap type="ImgInfo" id="imgInfoMap" extends="baseImgMap">
+		<collection property="goods" notNullColumn="goods_id" resultMap="goodsInfoMap" />
+	</resultMap>
+	
+	<select id="listDetail" parameterType="Img" resultMap="imgInfoMap">
+		SELECT img.*,g.goods_id,g.goods_name,g.goods_number,g.goods_price,g.goods_size,o.*,
+		og.order_goods_id,og.goods_cnt,og.goods_status,og.order_status,g.goods_freight,og.order_goods_price,
+		u.wx_name,u.account_number,u.level
+		FROM img LEFT JOIN goods g ON img.img_id = g.img_id 
+		LEFT JOIN order_goods og ON og.goods_id = g.goods_id 
+		LEFT JOIN webdata.order o ON o.order_id = og.order_id
+		LEFT JOIN user u ON u.user_id = o.user_id
+		<where>
+			<if test="imgName!=null">
+				and img.img_name like '%#{imgName}%'
+			</if>
+			<if test="imgId!=null">
+				and img.img_id = #{imgId}
+			</if>
+			<if test="folder!=null">
+				and img.folder = #{folder}
+			</if>
+		</where>
+		order by img.update_time desc
+	</select>
+
+</mapper>

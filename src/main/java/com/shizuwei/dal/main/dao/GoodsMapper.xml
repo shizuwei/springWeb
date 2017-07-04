@@ -1,63 +1,114 @@
 <?xml version="1.0" encoding="UTF-8"?>  
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.shizuwei.dal.main.dao.GoodsMapper">
-	<insert id="insert" parameterType="Goods">
-		insert into
-		goods(goods_name,price,brand_id,img_url,good_number,size)
-		values(#{goodsName},#{price,jdbcType=NUMERIC},#{brandId,jdbcType=NUMERIC},#{imgURL,jdbcType=VARCHAR},#{goodNumber,jdbcType=VARCHAR},#{size,jdbcType=VARCHAR})
-	</insert>
-
-	<update id="update" parameterType="Goods">
-		update goods
-		<set>
-			<if test="goods_name != null">goods_name=#{goodsName},</if>
-			<if test="price != null">price=#{price}</if>
-			<if test="brand_id != null">brand_id=#{brandId}</if>
-			<if test="img_url != null">img_url=#{imgURL}</if>
-			<if test="good_number != null">good_number=#{goodNumber}</if>
-			<if test="size != null">size=#{size}</if>
-		</set>
-		where goods_id=#{id}
-	</update>
-
-	<delete id="delete" parameterType="int">
-		delete from goods where
-		goods_id=#{id}
-	</delete>
-
-	<!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->
-	<select id="getById" parameterType="int" resultType="Goods">
+	
+	<resultMap type="Goods" id="baseGoodsMap">
+		<id property="goodsId" column="goods_id" />
+		<result property="goodsName" column="goods_name" />
+		<result property="goodsPrice" column="goods_price" />
+		<result property="imgId" column="img_id" />
+		<result property="goodsNumber" column="goods_number" />
+		<result property="size" column="goods_size" />
+		<result property="goodsFreight" column="goods_freight" />
+		<result property="goodsName" column="brand_name" />
+	</resultMap>
+	
+	<select id="getById" parameterType="int" resultMap="baseGoodsMap">
 		select *
 		from goods where goods_id=#{id}
 	</select>
-
-	<resultMap type="Goods" id="listMap">
-		<id property="id" column="goods_id" />
-		<result property="goodsName" column="goods_name" />
-		<result property="price" column="price" />
-		<result property="brandId" column="brand_id" />
-		<result property="good_number" column="goodNumber" />
-		<result property="imgURL" column="img_url" />
-		<result property="size" column="size" />
-	</resultMap>
-
-	<select id="list" parameterType="Goods" resultMap="listMap">
+	
+	<select id="getByIds" parameterType="list" resultMap="baseGoodsMap">
+		select *
+		from goods where goods_id in 
+		<foreach item="id" index="index" collection="list" 
+                         open="(" separator="," close=")">
+                        #{id}
+        </foreach>
+	</select>
+	
+	<select id="list" parameterType="Goods" resultMap="baseGoodsMap">
 		select * from goods
 		<where>
-			<if test="goodsName!=null">
+			<if test="goodsId != null">
+				and goods_id = #{goodsId}
+			</if>
+			<if test="goodsName != null">
 				and goods_name like '%#{goodsName}%'
 			</if>
-			<if test="brandId!=null">
-				and brand_id = #{brandId}
+			<if test="imgId != null">
+				and img_id = #{imgId}
 			</if>
-			<if test="goodNumber!=null">
-				and good_number = #{goodNumber}
+			<if test="goodsNumber != null">
+				and good_number = #{goodsNumber}
 			</if>
-			<if test="size!=null">
-				and size = #{size}
+			<if test="size != null">
+				and goods_size = #{size}
+			</if>
+			<if test="goodsFreight != null">
+				and goods_freight = #{goodsFreight}
+			</if>
+			<if test="goodsStatus != null">
+				and goods_status = #{goodsStatus}
+			</if>
+			<if test="brandName != null">
+				and brand_name like '%#{brandName}%'
 			</if>
 		</where>
 		order by update_time desc
 	</select>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="goodsId" parameterType="Goods">
+		insert into
+		goods(goods_name,goods_price,img_id,goods_number,goods_size,goods_freight,brand_name)
+		values(
+			#{goodsName},
+			#{goodsPrice,jdbcType=NUMERIC},
+			#{imgId,jdbcType=NUMERIC},
+			#{goodsNumber,jdbcType=VARCHAR},
+			#{size,jdbcType=NUMERIC},
+			#{goodsFreight,jdbcType=NUMERIC},
+			#{brandName,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<insert id="batchInsert" useGeneratedKeys="true" keyProperty="goodsId" parameterType="list">
+		insert into
+		goods(goods_name,goods_price,img_id,goods_number,goods_size,goods_freight,brand_name,goods_status)
+		values
+		<foreach collection="list" item="item" index="index"
+             separator=",">
+             (#{item.goodsName},#{item.goodsPrice},#{item.imgId},#{item.goodsNumber},#{item.size},#{item.goodsFreight},#{item.goodsName},#{item.goodsStatus})
+     	</foreach>	
+	</insert>
+	
+	<delete id="delById" parameterType="int">
+		delete from goods where
+		goods_id=#{goodsId}
+	</delete>
+	
+	<delete id="delByIds" parameterType="list">
+		delete from goods where
+		goods_id in
+		<foreach  collection="list" item="id" index="index"
+                         open="(" separator="," close=")">
+                        #{id}
+        </foreach>
+	</delete>
+	
+	<update id="update" parameterType="Goods">
+		update goods
+		<set>
+			<if test="goodsName != null">goods_name=#{goodsName},</if>
+			<if test="goodsPrice != null">goods_price=#{goodsPrice},</if>
+			<if test="imgId != null">img_id=#{imgId},</if>
+			<if test="goodsNumber != null">goods_number=#{goodsNumber},</if>
+			<if test="goodsStatus != null">goods_status=#{goodsStatus},</if>
+			<if test="size != null">goods_size=#{size},</if>
+			<if test="goodsFreight != null">goods_freight=#{goodsFreight},</if>
+			<if test="brandName != null">brand_name=#{brandName}</if>
+		</set>
+		where goods_id=#{goodsId}
+	</update>
 
 </mapper>

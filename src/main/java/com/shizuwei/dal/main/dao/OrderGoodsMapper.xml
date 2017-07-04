@@ -1,33 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>  
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
-<mapper namespace="com.shizuwei.dal.main.dao.OrderGoodsMapper"> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shizuwei.dal.main.dao.OrderGoodsMapper">
+	<resultMap id="baseOrderGoodsMap" type="OrderGoods">
+		<id property="orderGoodsId" column="order_goods_id" />
+		<result property="orderId" column="order_id" />
+		<result property="userId" column="user_id" />
+		<result property="goodsId" column="goods_id" />
+		<result property="goodsCnt" column="goods_cnt" />
+		<result property="orderGoodsPrice" column="order_goods_price" />
+		<result property="goodsStatus" column="goods_status" />
+		<result property="orderStatus" column="order_status" />
+		<result property="orderGoodsPriceDescription" column="order_goods_description" />
+	</resultMap>
 
-	<insert id="insert" parameterType="Order">  
-        insert into order(user_id,order_time,discription) 
-        values(#{userId},#{orderTime},#{discription})  
-    </insert>  
-      
-    <update id="update" parameterType="Order">  
-        update order 
-        <set>
-        	<if test="user_id != null">user_id=#{userId},</if>
-        	<if test="pay_time != null">pay_time=#{payTime}</if>
-        	<if test="order_time != null">order_time=#{orderTime}</if>
-        	<if test="total_price != null">total_price=#{totalPrice}</if>
-        	<if test="order_status != null">order_status=#{orderStatus}</if>
-        	<if test="goods_status != null">goods_status=#{goodsStatus}</if>
-        	<if test="discription != null">discription=#{discription}</if>
-        </set>
-        where id=#{id}
-    </update>  
-      
-    <delete id="delete" parameterType="int">  
-        delete from order where id=#{id}  
-    </delete>  
-      
-     <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->    
-    <select id="getById" parameterType="int" resultType="Order">  
-        select * from order where id=#{id}  
-    </select>  
-    
+	<insert id="insert" parameterType="OrderGoods">
+		insert into
+		order_goods(user_id,order_id,goods_id,goods_cnt,order_goods_price,order_goods_description,goods_status,order_status)
+		values(#{userId},#{orderId},#{goodsId},#{goodsCnt},#{orderGoodsPrice},#{orderGoodsDescription},#{goodsStatus},#{orderStatus})
+	</insert>
+
+	<update id="update" parameterType="OrderGoods">
+		update order_goods
+		<set>
+			<if test="orderId != null">order_id=#{orderId},</if>
+			<if test="userId != null">user_id=#{userId},</if>
+			<if test="goodsId != null">goods_id=#{goodsId},</if>
+			<if test="goodsCnt != null">goods_cnt=#{goodsCnt},</if>
+			<if test="orderGoodsPrice != null">order_goods_price=#{orderGoodsPrice},</if>
+			<if test="orderGoodsDescription != null">order_goods_description=#{orderGoodsDescription},</if>
+			<if test="goodsStatus != null">goods_status=#{goodsStatus},</if>
+			<if test="orderStatus != null">order_status=#{orderStatus}</if>
+		</set>
+		where order_goods_id=#{orderGoodsId}
+	</update>
+
+	<delete id="delById" parameterType="int">
+		delete from order_goods where
+		order_goods_id=#{id}
+	</delete>
+
+	<select id="getById" parameterType="int" resultType="OrderGoods">
+		select *
+		from order_goods where order_goods_id=#{id}
+	</select>
+
 </mapper>

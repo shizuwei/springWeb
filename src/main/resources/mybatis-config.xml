@@ -12,7 +12,17 @@
     <!-- 实体类,简称 -设置别名 -->  
     <typeAliases>  
         <!-- 批量定义别名 ，指定包名，自动扫描包中的类，别名即为类名，首字母大小写无所谓-->
-    	<package name="com.shizuwei.dal.main.po"/>
+    	<!-- <package name="com.shizuwei.dal.mai.po"/> -->
+    	<typeAlias alias="Goods" type="com.shizuwei.dal.main.po.Goods"/>
+    	<typeAlias alias="Img" type="com.shizuwei.dal.main.po.Img"/>
+    	<typeAlias alias="Order" type="com.shizuwei.dal.main.po.Order"/>
+    	<typeAlias alias="OrderGoods" type="com.shizuwei.dal.main.po.OrderGoods"/>
+    	<typeAlias alias="User" type="com.shizuwei.dal.main.po.User"/>
+    	<typeAlias alias="OrderInfo" type="com.shizuwei.dal.main.po.OrderInfo"/>
+    	<typeAlias alias="ImgInfo" type="com.shizuwei.dal.main.po.ImgInfo"/>
+    	<typeAlias alias="OrderGoodsInfo" type="com.shizuwei.dal.main.po.OrderGoodsInfo"/>
+    	<typeAlias alias="GoodsInfo" type="com.shizuwei.dal.main.po.GoodsInfo"/>
+    	<typeAlias alias="OrderListReqestDto" type="com.shizuwei.service.dto.request.OrderListReqestDto"/>
     </typeAliases>  
     <!-- 实体接口映射资源 -->  
     <!-- 

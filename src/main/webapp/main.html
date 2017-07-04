@@ -1,250 +1,250 @@
 <!doctype html>
 <html>
-   <head>
-      <meta charset="UTF-8">
-      <link href="./css/bootstrap.min.css" rel="stylesheet">
-      <link href="./css/fileinput.min.css" rel="stylesheet">
-      <link href="./css/app.css" rel="stylesheet">
-      <script src="./js/jquery-3.2.1.min.js"></script>
-      <script src="http://apps.bdimg.com/libs/angular.js/1.4.6/angular.min.js"></script>
-      <script src="http://apps.bdimg.com/libs/angular-route/1.3.13/angular-route.js"></script>
-      <script src="./js/fileinput.min.js"></script>
-      <script src="./js/bootstrap.min.js"></script>
-      <script src="./js/lib.js"></script>
-   <title>网站后台</title>
-   </head>
-   <body ng-app="app" ng-controller="myController">
-    <nav class="navbar navbar-inverse" >
-          <div class="navbar-header">
-              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-menu" aria-expanded="false">
-                  <span class="sr-only">Toggle navigation</span>
-                  <span class="icon-bar"></span>
-                  <span class="icon-bar"></span>
-                  <span class="icon-bar"></span>
-              </button>
-              <a class="navbar-brand" href="#">导航</a> 
-          </div>
-          <div id="navbar-menu" class="collapse navbar-collapse">
-               <ul class="nav navbar-nav"> 
-                  <li ng-class="{'active':nav.active}" ng-repeat="nav in navs">
-                  <a href="#" ng-click="switch($index)">{{nav.name}}</a></li>
-               </ul>
-          </div>
-      </nav>
-      <div class="container-fluid">
+<head>
+<meta charset="UTF-8">
+<link href="./css/bootstrap.min.css" rel="stylesheet">
+<link href="./css/fileinput.min.css" rel="stylesheet">
+<link href="./css/app.css" rel="stylesheet">
+<script src="./js/jquery-3.2.1.min.js"></script>
+<script src="http://apps.bdimg.com/libs/angular.js/1.4.6/angular.min.js"></script>
+<script src="http://apps.bdimg.com/libs/angular-route/1.3.13/angular-route.js"></script>
+<script src="./js/fileinput.min.js"></script>
+<script src="./js/bootstrap.min.js"></script>
+<script src="./js/lib.js"></script>
+<title>网站后台</title>
+</head>
+<body ng-app="app" ng-controller="myController">
+	<nav class="navbar navbar-inverse">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-menu" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="#">导航</a>
+		</div>
+		<div id="navbar-menu" class="collapse navbar-collapse">
+			<ul class="nav navbar-nav">
+				<li ng-class="{'active':nav.active}" ng-repeat="nav in navs">
+					<a href="#" ng-click="switch($index)">{{nav.name}}</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+	<div class="container-fluid">
 
-          <div ng-show = "navs[0].active" class="container-fluid">
-            <!-- 模态框（Modal） -->
-                <div class="modal fade" id="loginDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
-                   <div class="modal-dialog" >
-                           <div class="modal-content">
-                              <div class="modal-header">
-                                  <h4 class="modal-title" id="myModalLabel">用户登录：</h4>
-                              </div>
-                              <div class="modal-body"> 
-                                  <div id="userNameInput" class="input-group">
-                                    <span  class="input-group-addon">用户名：</span>
-                                    <input type="text" class="form-control" placeholder="请输入用户名" ng-model="user.name">
-                                    <span class="input-group-addon btn btn-primary glyphicon glyphicon-user" aria-hidden="true" ng-click='user.login()' ></span>
-                                 </div><br>
-                             </div> 
-                           </div> 
-                    </div>
-               </div>
-          </div>
+		<div ng-show="navs[0].active" class="container-fluid"></div>
 
 
-         <div ng-show = "navs[1].active == true" class="container-fluid">
-            <table class="table table-bordered text-center">
-                  <caption>
-                     <button type="button" class="btn btn-success" data-toggle="modal" data-target="#importImg" ng-click="img.import()" > 
-                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>导入 </button>
+		<div ng-show="navs[1].active == true" class="container-fluid">
+			<table class="table table-bordered text-center">
+				<caption>
+					<button type="button" class="btn btn-success" data-toggle="modal" data-target="#importImg" ng-click="img.import()">
+						<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+						导入
+					</button>
 
-                     <button type="button" class="btn btn-warning" ng-click="img.edit()"> 
-                     <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>修改 </button> 
+					<button type="button" class="btn btn-warning" ng-click="img.edit()">
+						<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+						修改
+					</button>
 
 
-                     <button type="button" class="btn btn-danger" ng-click="img.delete()"> 
-                     <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>删除 </button> 
+					<button type="button" class="btn btn-danger" ng-click="img.delete()">
+						<span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+						删除
+					</button>
 
-                  </caption>
-                  <thead>
-                     <tr class="row">
-                        <th class="col-md-1 col-1  text-center">ID</th>
-                        <th class="col-md-1 col-1  text-center">选择</th>
-                        <th class="col-md-3 col-3  text-center">图片</th>
-                        <th class="col-md-1 col-1  text-center">名称</th>
-                        <th class="col-md-6 col-6  text-center">信息</th>
-                     </tr>
-                  </thead>
-                  <tbody>
-                     <tr class="row" ng-repeat="img in imgs" ng-click="img.checked = !img.checked">
-                        <td class="col-md-1 col-1">1</td>
-                        <td class="col-md-1 col-1"><input name="checkbox" type="checkbox" ng-checked="img.checked"></td>
-                        <td class="col-md-3 col-3"><img ng-src="{{img.url}}" class="img-rounded"></td>
-                        <td class="col-md-1 col-1">{{img.name}}</td>
-                        <td class="col-md-6 col-6 no-padding" >
-                           <table class="table table-bordered text-center">
-                            <thead>
-                               <tr class="row">
-                                 <th class="col-md-2 col-2  text-center">尺寸</th>
-                                 <th class="col-md-1 col-1  text-center">价格</th>
-                                 <th class="col-md-6 col-6 text-center">订单信息</th>
-                                 <th class="col-md-1 col-1 text-center">商品状态</th>
-                                 <th class="col-md-2 col-2 text-center">编辑</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                               <tr class="row"  ng-repeat="g in img.goods">
-                                 <td class="col-md-2 col-2  text-center">{{g.name}}</td>
-                                 <td class="col-md-1 col-1  text-center">{{g.price}}</td>
-                                 <td class="col-md-6 col-6  text-center" >
-                                 <span ng-repeat="order in g.orders">{{order.user.name}}({{order.count}},{{order.status}})</span></td>
-                                 <td class="col-md-1 col-1 text-center">{{g.status}}</td>
-                                 <td class="col-md-2 col-2 text-center">   
-                                    <div class="input-group">
-                                       <span class="input-group-addon glyphicon glyphicon-remove btn btn-primary " aria-hidden="true" ng-click='good.delete(img,g)'></span> 
-                                        <span class="input-group-addon glyphicon glyphicon-pencil btn btn-primary " aria-hidden="true" ng-click='good.edit(img,g)'></span>  
-                                    </div>
-                                 </td>
-                              </tr>
-                            </tbody>
-                           </table>
-                        </td>
-                     </tr>
-                  </tbody>
-            </table>
+				</caption>
+				<thead>
+					<tr class="row">
+						<th class="col-md-1 col-1  text-center">ID</th>
+						<th class="col-md-1 col-1  text-center">选择</th>
+						<th class="col-md-3 col-3  text-center">图片</th>
+						<th class="col-md-1 col-1  text-center">名称</th>
+						<th class="col-md-6 col-6  text-center">信息</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr class="row" ng-repeat="img in imgs" ng-click="img.checked = !img.checked">
+						<td class="col-md-1 col-1">{{img.imgId}}</td>
+						<td class="col-md-1 col-1">
+							<input name="checkbox" type="checkbox" ng-checked="img.checked">
+						</td>
+						<td class="col-md-3 col-3">
+							<img ng-src="{{img.imgUrl}}" class="img-rounded">
+						</td>
+						<td class="col-md-1 col-1">{{img.imgName}}</td>
+						<td class="col-md-6 col-6 no-padding">
+							<table class="table table-bordered text-center">
+								<thead>
+									<tr class="row">
+										<th class="col-md-2 col-2  text-center">尺寸</th>
+										<th class="col-md-1 col-1  text-center">价格</th>
+										<th class="col-md-7 col-7 text-center">订单信息</th>
+										<th class="col-md-2 col-2 text-center">编辑</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr class="row" ng-repeat="g in img.goods">
+										<td class="col-md-2 col-2  text-center">{{g.size}}</td>
+										<td class="col-md-1 col-1  text-center">{{g.goodsPrice}}</td>
+										<td class="col-md-7 col-7  text-center">
+											<span ng-repeat="order in g.orders">{{order.user.accountNumber}}({{order.orderGoods[0].goodsCnt}},{{order.orderGoods[0].orderStatusStr}},{{order.orderGoods[0].goodsStatusStr}})</span>
+										</td>
+										<td class="col-md-2 col-2 text-center">
+											<div class="input-group">
+												<span class="input-group-addon glyphicon glyphicon-remove btn btn-primary " aria-hidden="true" ng-click='good.delete(img,g)'></span>
+												<span class="input-group-addon glyphicon glyphicon-pencil btn btn-primary " aria-hidden="true" ng-click='good.edit(img,g)'></span>
+											</div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</td>
+					</tr>
+				</tbody>
+			</table>
 
-         </div>
+		</div>
 
-         <div class="modal fade" id="importImg" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-         <div class="modal-dialog">
-            <div class="modal-content">
-               <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                     &times;
-                  </button>
-                  <h4 class="modal-title" id="myModalLabel">
-                     选择商品图片目录导入图片
-                  </h4>
-               </div>
-               <div class="modal-body">
-                     <form enctype="multipart/form-data" class="bs-example bs-example-form" role="form">
-                       <div class="input-group">
-                           <span class="input-group-addon">选择图片文件</span>
-                           <input id="imgFileInput" name="imgData[]" type="file" multiple data-show-upload="false" data-show-caption="true">    
-                       </div><br>
-                       <div class="input-group">
-                           <span  class="input-group-addon">导入到</span>
-                           <input id="img-folder" type="text" class="form-control" placeholder="{{today}}">
-                           <span  class="input-group-addon offset-x-5px">长度</span>
-                           <input id="img-width" type="text" class="form-control" placeholder="单位: px">
-                           <span  class="input-group-addon offset-x-5px">宽度</span>
-                           <input id="img-height" type="text" class="form-control" placeholder="单位: px">
-                       </div>
-                     </form>
-               </div>
-               <div class="modal-footer">
-                  <button type="button" class="btn btn-default" data-dismiss="modal">关闭
-                  </button>
-                  <button type="submit" name="submit" class="btn btn-primary" ng-click="img.upload()">
-                     导入图片
-                  </button>
-               </div>
-            </div><!-- /.modal-content -->
-         </div><!-- /.modal -->
-        </div>
+		<div class="modal fade" id="importImg" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel">选择商品图片目录导入图片</h4>
+					</div>
+					<div class="modal-body">
+						<form enctype="multipart/form-data" class="bs-example bs-example-form" role="form">
+							<div class="input-group">
+								<span class="input-group-addon">选择图片文件</span>
+								<input id="imgFileInput" name="file" type="file" multiple="true" data-show-upload="false" data-show-caption="true">
+							</div>
+							<br>
+							<div class="input-group">
+								<span class="input-group-addon">导入到</span>
+								<input id="img-folder" name="folder" type="text" class="form-control" placeholder="{{today}}">
+								<span class="input-group-addon offset-x-5px">高度</span>
+								<input id="img-width" name="height" type="text" class="form-control" placeholder="单位: px">
+								<span class="input-group-addon offset-x-5px">宽度</span>
+								<input id="img-height" name="height" type="text" class="form-control" placeholder="单位: px">
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+						<button type="submit" name="submit" class="btn btn-primary" ng-click="img.upload()">导入图片</button>
+					</div>
+				</div>
+				<!-- /.modal-content -->
+			</div>
+			<!-- /.modal -->
+		</div>
 
-        <div class="modal fade" id="editImg" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-               <div class="modal-content">
-                  <div class="modal-header">
-                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                        &times;
-                     </button>
-                     <h4 class="modal-title" id="myModalLabel">
-                        修改商品属性
-                     </h4>
-                  </div>
-                  <div class="modal-body">
-                      <div class="input-group">
-                           <span  class="input-group-addon">商品名称</span>
-                           <input type="text" class="form-control" placeholder="{{today}}" ng-model="img.cur.name">
-                           <span class="input-group-addon  btn btn-primary" aria-hidden="true"><span ng-click='img.editName(img.cur,$event)' class="glyphicon glyphicon-refresh"></span></span>  
-                       </div>
-                       <h5>已添加尺寸：</h5>
-                       <div class="input-group" ng-repeat="gg in img.cur.goods">
-                           <span  class="input-group-addon">尺寸</span>
-                           <input type="text" class="form-control" placeholder="输入商品尺寸" ng-model="gg.name">
-                           <span  class="input-group-addon">价格</span>
-                           <input type="text" class="form-control" placeholder="输入商品价格" ng-model="gg.price">
-                           <span class="input-group-addon  btn btn-primary" aria-hidden="true"><span ng-click='good.editSize(gg,$event)' class="glyphicon glyphicon-refresh"></span></span>  
-                       </div>
-                       <h5>添加尺寸：</h5>
-                       <div class="input-group has-error">
-                           <span  class="input-group-addon">尺寸</span>
-                           <input type="text" class="form-control" placeholder="添加商品尺寸" ng-model="img.cur.inputSize">
-                           <span  class="input-group-addon">价格</span>
-                           <input type="text" class="form-control" placeholder="添加商品价格" ng-model="img.cur.inputSize">
-                           <span class="input-group-addon glyphicon glyphicon-plus btn btn-primary " aria-hidden="true" ng-click='img.addMark()'></span>  
-                       </div>
-                  </div>
-                  <div class="modal-footer">
-                     <button type="button" class="btn btn-default" data-dismiss="modal">关闭
-                     </button>
-                  </div>
-               </div><!-- /.modal-content -->
-            </div><!-- /.modal -->
-         </div>
+		<div class="modal fade" id="editImg" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel">修改商品属性</h4>
+					</div>
+					<div class="modal-body">
+						<div class="input-group">
+							<span class="input-group-addon">商品名称</span>
+							<input type="text" class="form-control" placeholder="{{today}}" ng-model="img.cur.imgName">
+							<span class="input-group-addon  btn btn-primary" aria-hidden="true">
+								<span ng-click='img.editName(img.cur,$event)' class="glyphicon glyphicon-refresh"></span>
+							</span>
+						</div>
+						<h5>已添加尺寸：</h5>
+						<div class="input-group" ng-repeat="gg in img.cur.goods">
+							<span class="input-group-addon">尺寸</span>
+							<input type="text" class="form-control" placeholder="输入商品尺寸" ng-model="gg.size">
+							<span class="input-group-addon">价格</span>
+							<input type="text" class="form-control" placeholder="输入商品价格" ng-model="gg.goodsPrice">
+							<span class="input-group-addon  btn btn-primary" aria-hidden="true">
+								<span ng-click='good.editInfo(gg,$event)' class="glyphicon glyphicon-refresh"></span>
+							</span>
+						</div>
+						<h5>添加尺寸：</h5>
+						<div class="input-group has-error">
+							<span class="input-group-addon">尺寸</span>
+							<input type="text" class="form-control" placeholder="添加商品尺寸" ng-model="img.cur.inputSize">
+							<span class="input-group-addon">价格</span>
+							<input type="text" class="form-control" placeholder="添加商品价格" ng-model="img.cur.inputPrice">
+							<span class="input-group-addon glyphicon glyphicon-plus btn btn-primary " aria-hidden="true" ng-click='img.addGood()'></span>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					</div>
+				</div>
+				<!-- /.modal-content -->
+			</div>
+			<!-- /.modal -->
+		</div>
 
-          <div class="modal fade" id="editGood" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-               <div class="modal-content">
-                  <div class="modal-header">
-                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                        &times;
-                     </button>
-                     <h4 class="modal-title" id="myModalLabel">
-                        编辑【{{img.cur.name}}】【{{good.cur.name}}】的订单信息
-                     </h4>
-                  </div>
-                  <div class="modal-body">
-                      <div class="input-group">
-                           <span  class="input-group-addon">商品状态</span>
-                           <select class="form-control">
-                              <option>1</option>
-                              <option>2</option>
-                              <option>3</option>
-                              <option>4</option>
-                              <option>5</option>
-                            </select>
-                           <span class="input-group-addon  btn btn-primary" aria-hidden="true"><span ng-click='img.editName(img.cur,$event)' class="glyphicon glyphicon-refresh"></span></span>  
-                       </div><br>
-                        <div class="input-group" ng-repeat="o in good.cur.orders">
-                           <span  class="input-group-addon">尺寸</span>
-                           <input type="text" class="form-control" placeholder="输入商品尺寸" ng-model="gg.name">
-                           <span  class="input-group-addon">价格</span>
-                           <input type="text" class="form-control" placeholder="输入商品价格" ng-model="gg.price">
-                           <span class="input-group-addon  btn btn-primary" aria-hidden="true"><span ng-click='good.editSize(gg,$event)' class="glyphicon glyphicon-refresh"></span></span>  
-                       </div><br>
-                       <div class="input-group">
-                           <span  class="input-group-addon">尺寸</span>
-                           <input type="text" class="form-control" placeholder="输入商品尺寸" ng-model="img.cur.inputSize">
-                           <span  class="input-group-addon">价格</span>
-                           <input type="text" class="form-control" placeholder="输入商品价格" ng-model="img.cur.inputSize">
-                           <span class="input-group-addon glyphicon glyphicon-plus btn btn-primary " aria-hidden="true" ng-click='img.addMark()'></span>  
-                       </div>
-                  </div>
-                  <div class="modal-footer">
-                     <button type="button" class="btn btn-default" data-dismiss="modal">
-                     关闭
-                     </button>
-                  </div>
-               </div><!-- /.modal-content -->
-            </div><!-- /.modal -->
-         </div>
+		<div class="modal fade" id="editGood" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel">编辑【{{img.cur.imgName}}】【{{good.cur.goodsName}}】的订单信息</h4>
+					</div>
+					<div class="modal-body">
+						<br>
+						<div class="input-group" ng-repeat="o in good.cur.orders">
+							<span class="input-group-addon">数量</span>
+							<input type="text" class="form-control" placeholder="数量" ng-model="o.orderGoods[0].goodsCnt">
+							<span class="input-group-addon">用户</span>
+							<select ng-model="o.orderGoods[0].userId" class="form-control" ng-options="u.userId as u.accountNumber for u in user.list">
+							</select>
+							<span class="input-group-addon">订单状态</span>
+							<select ng-model="o.orderGoods[0].orderStatus" class="form-control" ng-options="ost.code as ost.note for ost in order.status">
+								<!-- <option ng-repeat="ost in order.status" value="{{ost.code}}" ng-seleted="o.orderGoods[0].orderStatus==ost.code">{{ost.note}}</option> -->
+							</select>
+							<span class="input-group-addon">商品状态</span>
+							<select class="form-control" ng-model="o.orderGoods[0].goodsStatus" ng-change="goodsStatusChanged(o.orderGoods[0])" ng-options="gst.code as gst.note for gst in good.status">
+							</select>
+							<span class="input-group-addon  btn btn-primary" aria-hidden="true">
+								<span ng-click='order.editOrder(o.orderGoods[0],$event)' class="glyphicon glyphicon-refresh"></span>
+							</span>
+							<span class="input-group-addon glyphicon glyphicon-minus btn btn-primary " aria-hidden="true" ng-click='order.delOrder(o.orderGoods[0],$event)'></span>
+						</div>
+						<br>
+						<div class="input-group">
+							<span class="input-group-addon">数量</span>
+							<input type="text" class="form-control" placeholder="数量" ng-model="curGoodCnt">
+							<span class="input-group-addon">用户</span>
+							<select class="form-control" ng-model="selectedUserId">
+								<option ng-repeat="u in user.list" value="{{u.userId}}">{{u.accountNumber}}</option>
+							</select>
+							<span class="input-group-addon">订单状态</span>
+							<select class="form-control" ng-model="selectedOrderstatus">
+								<option ng-repeat="ost in order.status" value="{{ost.code}}">{{ost.note}}</option>
+							</select>
+							<span class="input-group-addon">商品状态</span>
+							<select class="form-control" ng-model="selectedGoodsStatus">
+								<option ng-repeat="gst in good.status" value="{{gst.code}}">{{gst.note}}</option>
+							</select>
+							<span class="input-group-addon  btn btn-primary" aria-hidden="true">
+								<span ng-click='good.editInfo(good.cur,$event)' class="glyphicon glyphicon-refresh"></span>
+							</span>
+							<span class="input-group-addon glyphicon glyphicon-plus btn btn-primary " aria-hidden="true" ng-click='order.addOrder()'></span>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal"  ng-click="order.finishEdit()">关闭</button>
+					</div>
+				</div>
+				<!-- /.modal-content -->
+			</div>
+			<!-- /.modal -->
+		</div>
 
-      </div>
-     <script src="./js/app.js"></script>
-   </body>
-</html
+	</div>
+	<script src="./js/app.js"></script>
+</body>
+</html>

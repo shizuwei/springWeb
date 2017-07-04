@@ -61,15 +61,19 @@
 	<bean id="goodsMapper" parent="baseMapper">
 		<property name="mapperInterface" value="com.shizuwei.dal.main.dao.GoodsMapper" />
 	</bean>
-	
+
 	<bean id="orderMapper" parent="baseMapper">
 		<property name="mapperInterface" value="com.shizuwei.dal.main.dao.OrderMapper" />
 	</bean>
-	
-	<bean id="brandMapper" parent="baseMapper">
-		<property name="mapperInterface" value="com.shizuwei.dal.main.dao.BrandMapper" />
+
+	<bean id="orderGoodsMapper" parent="baseMapper">
+		<property name="mapperInterface" value="com.shizuwei.dal.main.dao.OrderGoodsMapper" />
 	</bean>
-	
+
+	<bean id="imgMapper" parent="baseMapper">
+		<property name="mapperInterface" value="com.shizuwei.dal.main.dao.ImgMapper" />
+	</bean>
+
 
 	<!-- <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer"> <property 
 		name="basePackage" value="com.shizuwei.dal.main.dao"></property> <property 

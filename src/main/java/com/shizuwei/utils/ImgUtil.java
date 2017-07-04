@@ -25,7 +25,7 @@ public class ImgUtil {
 	@Data
 	public static class ImgCutParam {
 
-		public ImgCutParam(int x, int y, int width, int height) {
+		public ImgCutParam(int x, int y, int width, int height, String fileType) {
 			this.x = x;
 			this.y = y;
 			this.width = width;
@@ -74,17 +74,8 @@ public class ImgUtil {
 	public static void main(String[] args) throws Exception {
 		trimPic("D:\\PICS\\2017-5-21\\QQ截图20170521231807.png", "D:\\PICS\\2017-5-21\\1490968391(1)xxy.png");
 	}
-
-	/**
-	 * 对图片裁剪，并把裁剪完蛋新图片保存 。
-	 * 
-	 * @param srcpath
-	 *            源图片路径
-	 * @param subpath
-	 *            剪切图片存放路径
-	 * @throws IOException
-	 */
- 
+	
+	
 
 	public static void trimPic(String srcPath, String destPath) throws Exception {
 		FileInputStream is = null;
