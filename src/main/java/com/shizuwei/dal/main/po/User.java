@@ -7,6 +7,8 @@ public class User {
 	private Integer userId;
 	private String wxName;
 	private String accountNumber;
+	private String password;
+	private Integer level;
 	
 	public User() {
 		

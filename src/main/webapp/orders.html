@@ -1,0 +1,118 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link href="./css/bootstrap.min.css" rel="stylesheet">
+<link href="./css/fileinput.min.css" rel="stylesheet">
+<link href="./css/orders.css" rel="stylesheet">
+<script src="./js/jquery-3.2.1.min.js"></script>
+<script src="http://apps.bdimg.com/libs/angular.js/1.4.6/angular.min.js"></script>
+<script src="http://apps.bdimg.com/libs/angular-route/1.3.13/angular-route.js"></script>
+<script src="./js/fileinput.min.js"></script>
+<script src="./js/bootstrap.min.js"></script>
+<script src="./js/ui-bootstrap-tpls-2.5.0.min.js"></script>
+<script src="./js/lib.js"></script>
+<title>英伦买买买</title>
+</head>
+<body ng-app="app" ng-controller="myController">
+	<nav class="navbar navbar-inverse">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-menu" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="#">导航</a>
+		</div>
+		<div id="navbar-menu" class="collapse navbar-collapse">
+			<ul class="nav navbar-nav">
+				<li ng-class="active">
+					<a href="#">您的订单</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+	<div class="container-fluid">
+		<div class="container-fluid">
+			<table class="table table-bordered text-center">
+				<caption>
+
+					<span class="titlebar" class="btn btn-success">
+						<label>场次</label>
+						<select class="form-control" ng-model="folder" ng-change="folder" ng-options="f as f for f in folders">
+						<option value="">全部</option>
+						</select>
+					</span>
+
+					<span class="titlebar" class="btn btn-success">
+						<label>订单状态:</label>
+						<select class="form-control" ng-model="orderStatus" ng-change="orderStatus" ng-options="ost.code as ost.note for ost in order.status">
+							<option value="">全部</option>
+						</select>
+					</span>
+
+					<span class="titlebar" class="input-group-addon">
+						<label>商品状态:</label>
+						<select class="form-control" ng-model="goodsStatus" ng-change="goodsStatus" ng-options="gst.code as gst.note for gst in good.status">
+							<option value="">全部</option>
+						</select>
+					</span>
+
+					<button type="button" class="btn btn-danger" ng-click="search()">
+						<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+						查询
+					</button>
+
+					<button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#importImg" ng-click="user.logout()">
+						<span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+						退出
+					</button>
+
+				</caption>
+
+				<thead>
+					<tr class="row">
+						<th class="col-md-2 col-2  text-center">订单信息</th>
+						<th class="col-md-6 col-6  text-center">商品信息</th>
+						<th class="col-md-2 col-2  text-center">购买信息</th>
+						<th class="col-md-2 col-2  text-center">订单状态</th>
+					</tr>
+				</thead>
+
+				<tbody>
+					<tr class="row" ng-repeat="order in orders">
+						<td ng-if="order.span > 0" rowspan="{{order.span}}" class="col-md-2 col-2">
+							场次：<br>{{order.orderFolder}}<br>
+							金额：<br>{{order.orderTotalPrice}}
+						</td>
+						<td class="col-md-6 col-6"> 
+							<img src="{{order.imgURL}}"/>
+							<div>
+								名称：{{order.goodsId}} <br>
+								序号：{{order.goodsId}} <br>
+								单价：{{order.orderGoodsPrice}}元
+							</div>
+						</td>
+						<td class="col-md-3 col-3">
+							数量：{{order.goodsCnt}}件 <br>
+							运费：10 <br>
+							汇率：0.75 <br>
+							总价：{{order.orderGoodsPrice}}元 
+						</td>
+						<td class="col-md-1 col-1"> 
+							{{order.orderStatusStr}} <br>
+							{{order.goodsStatusStr}} 
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<div>
+				<ul uib-pagination total-items="totalItems" ng-change="pageselect()" ng-model="currentPage" max-size="maxSize" first-text="第一页" previous-text="上一页" next-text="下一页" last-text="最后页" boundary-links="true" boundary-link-numbers="true" rotate="false"></ul>
+			</div>
+		</div>
+	</div>
+	<script src="./js/orders.js"></script>
+</body>
+</html>

@@ -2,6 +2,7 @@ package com.shizuwei.controller;
 
 import java.io.FileInputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -18,12 +19,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.shizuwei.controller.common.constants.WebConstantsUtil;
 import com.shizuwei.controller.common.dto.PageDto;
 import com.shizuwei.controller.common.response.Response;
-import com.shizuwei.controller.common.response.ResponseBuilder;
-import com.shizuwei.controller.common.response.ResponseStatus;
 import com.shizuwei.dal.common.page.PageBean;
 import com.shizuwei.dal.main.po.ImgInfo;
+import com.shizuwei.service.dto.request.ImgListRequestDto;
 import com.shizuwei.service.main.ImgService;
 
 @Controller
@@ -31,7 +32,7 @@ public class ImgController {
 	private static final Logger logger = LoggerFactory.getLogger(ImgController.class);
 	@Resource
 	private ImgService imgService;
-
+	
 	@RequestMapping(value = "img/upload.do", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public Response upload(@RequestParam(required = false) String folder, @RequestParam(required = false) Integer width,
@@ -41,27 +42,36 @@ public class ImgController {
 				logger.debug("upload file {}", file.getOriginalFilename());
 				imgService.saveImg(folder, width == null ? 0 : width, height == null ? 0 : height, file);
 			}
+			return Response.done();
 		} catch (Exception e) {
 			logger.error("error file upload {} e = {}", file.getOriginalFilename(), e);
-			return new ResponseBuilder().setStatus(ResponseStatus.BUSINESS_ERROR).build();
+			return Response.error(e.getMessage());
 		}
-		return new ResponseBuilder().build();
+	}
+	
+
+	@RequestMapping(value = "img/listFolder.do", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public Response listFolder() {
+		List<String> folders = this.imgService.getFolders();
+		return Response.data(folders);
 	}
 
 	@RequestMapping(value = "img/list.do", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public Response list(@RequestParam(required = false) String folder) {
-		logger.debug("folder={}", folder);
-		if (StringUtils.isBlank(folder)) {
-			return new ResponseBuilder().setStatus(ResponseStatus.BUSINESS_ERROR).build();
+	public Response list(@RequestBody ImgListRequestDto imgListRequsetDto) {
+		logger.debug("imgListRequsetDto={}", imgListRequsetDto);
+		if (StringUtils.isBlank(imgListRequsetDto.getFolder())) {
+			return Response.error("folder不能为空！");
 		}
-		PageBean<ImgInfo> list = this.imgService.list(folder);
+		PageBean<ImgInfo> list = this.imgService.list(imgListRequsetDto);
 		PageDto pageDto = new PageDto();
 		pageDto.setCount(list.getTotal());
 		pageDto.setCurPageCount(list.getSize());
 		pageDto.setPageNum(list.getPageNum());
 		pageDto.setPageSize(list.getPageSize());
-		return new ResponseBuilder().setData(list.getList()).setPage(pageDto).build();
+		pageDto.setTotalPages(list.getPages());
+		return Response.data(list.getList()).setPage(pageDto);
 	}
 	
 	@RequestMapping(value = "img/edit.do", method = { RequestMethod.POST, RequestMethod.GET })
@@ -69,7 +79,7 @@ public class ImgController {
 	public Response edit(@RequestBody ImgInfo img) {
 		logger.debug("img={}", img);
 		this.imgService.update(img);
-		return new ResponseBuilder().build();
+		return Response.done();
 	}
 	
 	@RequestMapping(value = "img/delete.do", method = { RequestMethod.POST, RequestMethod.GET })
@@ -77,15 +87,14 @@ public class ImgController {
 	public Response delete(@RequestBody ImgInfo img) {
 		logger.debug("img={}", img);
 		this.imgService.delete(img.getImgId());
-		return new ResponseBuilder().build();
+		return Response.done();
 	}
 
 	@RequestMapping(value = "img/{folder}/get.do", method = { RequestMethod.POST, RequestMethod.GET })
 	public void getPic(@PathVariable String folder, @RequestParam(value = "file") String file,
 			HttpServletResponse response) {
 		logger.debug("getPic folder = {}, file = {}", folder, file);
-		String destFilePath = "D://test/";
-		destFilePath = destFilePath + folder + "/" + file;
+		String destFilePath = WebConstantsUtil.getDestFilePath() + folder + "/" + file;
 		try {
 			FileInputStream fInputStream = new FileInputStream(destFilePath);
 			int len = fInputStream.available();
@@ -98,6 +107,7 @@ public class ImgController {
 			outputStream.close();
 		} catch (Exception e) {
 			// TODO: handle exception
+			logger.debug("ex {}", e);
 		}
 	}
 }

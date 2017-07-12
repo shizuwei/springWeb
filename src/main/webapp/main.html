@@ -10,6 +10,7 @@
 <script src="http://apps.bdimg.com/libs/angular-route/1.3.13/angular-route.js"></script>
 <script src="./js/fileinput.min.js"></script>
 <script src="./js/bootstrap.min.js"></script>
+<script src="./js/ui-bootstrap-tpls-2.5.0.min.js"></script>
 <script src="./js/lib.js"></script>
 <title>网站后台</title>
 </head>
@@ -50,12 +51,47 @@
 						修改
 					</button>
 
-
 					<button type="button" class="btn btn-danger" ng-click="img.delete()">
 						<span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
 						删除
 					</button>
 
+					<button type="button" class="btn btn-danger" ng-click="img.update()">
+						<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+						刷新
+					</button>
+
+					<span class="titlebar" class="btn btn-success">
+						<label>文件夹：</label>
+						<select class="form-control" ng-model="folder" ng-change="folder" ng-options="f as f for f in folders">
+						</select>
+					</span>
+
+					<span class="titlebar" class="btn btn-success">
+						<label>用户：</label>
+						<select class="form-control" ng-model="userId" ng-change="userId" ng-options="u.userId as u.accountNumber for u in user.list">
+							<option value="">全部</option>
+						</select>
+					</span>
+
+					<span class="titlebar" class="btn btn-success">
+						<label>订单状态:</label>
+						<select class="form-control" ng-model="orderStatus" ng-change="orderStatus" ng-options="ost.code as ost.note for ost in order.status">
+							<option value="">全部</option>
+						</select>
+					</span>
+
+					<span class="titlebar" class="input-group-addon">
+						<label>商品状态:</label>
+						<select class="form-control" ng-model="goodsStatus" ng-change="goodsStatus" ng-options="gst.code as gst.note for gst in good.status">
+							<option value="">全部</option>
+						</select>
+					</span>
+
+					<button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#importImg" ng-click="user.logout()">
+						<span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+						退出
+					</button>
 				</caption>
 				<thead>
 					<tr class="row">
@@ -80,18 +116,20 @@
 							<table class="table table-bordered text-center">
 								<thead>
 									<tr class="row">
+										<th class="col-md-1 col-1  text-center">序号</th>
 										<th class="col-md-2 col-2  text-center">尺寸</th>
 										<th class="col-md-1 col-1  text-center">价格</th>
-										<th class="col-md-7 col-7 text-center">订单信息</th>
+										<th class="col-md-6 col-6 text-center">订单信息</th>
 										<th class="col-md-2 col-2 text-center">编辑</th>
 									</tr>
 								</thead>
 								<tbody>
 									<tr class="row" ng-repeat="g in img.goods">
+										<td class="col-md-1 col-1  text-center">{{g.goodsId}}</td>
 										<td class="col-md-2 col-2  text-center">{{g.size}}</td>
 										<td class="col-md-1 col-1  text-center">{{g.goodsPrice}}</td>
-										<td class="col-md-7 col-7  text-center">
-											<span ng-repeat="order in g.orders">{{order.user.accountNumber}}({{order.orderGoods[0].goodsCnt}},{{order.orderGoods[0].orderStatusStr}},{{order.orderGoods[0].goodsStatusStr}})</span>
+										<td class="col-md-7 col-6  text-center">
+											<span ng-repeat="order in g.orders">{{order.user.accountNumber}}({{order.orderGoods[0].goodsCnt}}件,{{order.orderGoods[0].orderGoodsPrice}}元,{{order.orderGoods[0].orderStatusStr}},{{order.orderGoods[0].goodsStatusStr}})<br></span>
 										</td>
 										<td class="col-md-2 col-2 text-center">
 											<div class="input-group">
@@ -106,7 +144,9 @@
 					</tr>
 				</tbody>
 			</table>
-
+			<div>
+				<ul uib-pagination total-items="totalItems" ng-change="pageselect()" ng-model="currentPage" max-size="maxSize" first-text="第一页" previous-text="上一页" next-text="下一页" last-text="最后页" boundary-links="true" boundary-link-numbers="true"  rotate="false"></ul>
+			</div>
 		</div>
 
 		<div class="modal fade" id="importImg" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -125,7 +165,7 @@
 							<br>
 							<div class="input-group">
 								<span class="input-group-addon">导入到</span>
-								<input id="img-folder" name="folder" type="text" class="form-control" placeholder="{{today}}">
+								<input id="img-folder" name="folder" type="text" value="{{folder?folder:today}}"class="form-control" placeholder="{{today}}">
 								<span class="input-group-addon offset-x-5px">高度</span>
 								<input id="img-width" name="height" type="text" class="form-control" placeholder="单位: px">
 								<span class="input-group-addon offset-x-5px">宽度</span>
@@ -153,7 +193,7 @@
 					<div class="modal-body">
 						<div class="input-group">
 							<span class="input-group-addon">商品名称</span>
-							<input type="text" class="form-control" placeholder="{{today}}" ng-model="img.cur.imgName">
+							<input type="text" class="form-control" placeholder="无" ng-model="img.cur.imgName">
 							<span class="input-group-addon  btn btn-primary" aria-hidden="true">
 								<span ng-click='img.editName(img.cur,$event)' class="glyphicon glyphicon-refresh"></span>
 							</span>
@@ -230,20 +270,19 @@
 								<option ng-repeat="gst in good.status" value="{{gst.code}}">{{gst.note}}</option>
 							</select>
 							<span class="input-group-addon  btn btn-primary" aria-hidden="true">
-								<span ng-click='good.editInfo(good.cur,$event)' class="glyphicon glyphicon-refresh"></span>
+								<span ng-click='' class="glyphicon glyphicon-refresh"></span>
 							</span>
 							<span class="input-group-addon glyphicon glyphicon-plus btn btn-primary " aria-hidden="true" ng-click='order.addOrder()'></span>
 						</div>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal"  ng-click="order.finishEdit()">关闭</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal" ng-click="order.finishEdit()">关闭</button>
 					</div>
 				</div>
 				<!-- /.modal-content -->
 			</div>
 			<!-- /.modal -->
 		</div>
-
 	</div>
 	<script src="./js/app.js"></script>
 </body>

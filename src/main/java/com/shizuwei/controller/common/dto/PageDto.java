@@ -18,14 +18,21 @@ public class PageDto implements Cloneable {
         }
     }
 
+    /*列表总个数*/
     private Integer count;
+    /*当前页个数*/
     private Integer curPageCount;
+    /*第几页*/
     private Integer pageNum;
+    /*一页多少个*/
     private Integer pageSize;
+    /*总共多少页*/
+    private Integer totalPages;
 
     public PageDto() {
         this.count = 0;
         this.curPageCount = 0;
+        this.totalPages = 0;
         this.pageNum = DEF_PAGE_NUM;
         this.pageSize = DEF_PAGE_SIZE;
     }
@@ -46,7 +53,15 @@ public class PageDto implements Cloneable {
         return curPageCount;
     }
 
-    public void setCurPageCount(Integer curPageCount) {
+    public Integer getTotalPages() {
+		return totalPages;
+	}
+
+	public void setTotalPages(Integer totalPages) {
+		this.totalPages = totalPages;
+	}
+
+	public void setCurPageCount(Integer curPageCount) {
         if (curPageCount == null) {
             curPageCount = 0;
         }
@@ -97,17 +112,21 @@ public class PageDto implements Cloneable {
             return;
         }
      
-        int lastPageNum = (count - 1) / pageSize + 1;
+        int  lastPageNum = (count - 1) / pageSize + 1;
         if (lastPageNum > pageNum) {
             setCurPageCount(pageSize);
             return;
         }
         int lastPageSize = (count - 1) % pageSize + 1;
         setCurPageCount(lastPageSize);
+        
+        totalPages = lastPageNum;
+        
         if (lastPageNum < pageNum) {
             setPageNum(lastPageNum);
             return;
         }
+        
     }
 
     public int firstNum() {

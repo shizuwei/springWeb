@@ -173,7 +173,7 @@
 			<div class="container">
 				<div class="row">
 					<div class="col-md-offset-3 col-md-6">
-						<form class="form-horizontal">
+						<form id="form" class="form-horizontal">
 							<span class="heading">用户登录</span>
 							<div id="usercodegrp" class="form-group">
 								<input type="text" class="form-control" id="user_code" placeholder="用户代号:5位数字" onKeypress="return (/^[\d.]/.test(String.fromCharCode(event.keyCode)))">
@@ -182,15 +182,19 @@
 							<div id="password-group" class="form-group help hidden">
 								<input type="password" class="form-control" id="password" placeholder="密　码">
 								<i class="fa fa-lock"></i>
-								<!--  <a href="#" class="fa fa-question-circle"></a> -->
-							</div>
-							<div class="form-group ">
-								<div class="main-checkbox hidden">
-									<input type="checkbox" value="None" id="checkbox1" name="check" />
-									<label for="checkbox1"></label>
+								<a href="#" class="fa fa-question-circle"></a>
+
+								<div class="form-group ">
+									<div class="main-checkbox ">
+										<input type="checkbox" value="None" id="checkbox1" name="check" />
+										<label for="checkbox1"></label>
+									</div>
+									<span class="text hidden">记住我</span>
+									<button type="submit" class="btn btn-default">登录</button>
 								</div>
-								<span class="text hidden">记住我</span>
-								<button type="submit" class="btn btn-default">登录</button>
+							</div>
+							<div id="warn" class="alert alert-warning">
+								 <span id="msg"></span>
 							</div>
 						</form>
 					</div>
@@ -205,37 +209,88 @@
 	</div>
 
 	<script type="text/javascript">
+		level = 0;	
+	
+		function checkLevel(userCode) {
+			$.ajax({
+				type : 'POST',
+				url : './user/get.do',
+				data : {
+					name : userCode
+				},
+				success : function(msg) {
+					if (msg.status == 200) {
+						console.log("data = " + msg);
+						if (msg.data.level >= 1) {
+							level = 1;
+							$("#password-group").removeClass("hidden");
+							login();
+							
+						}else{
+							level = 0;
+							login2Server({userCode : userCode,password : "0000"});
+						}
+					}else{
+						$("#warn").removeClass("hidden");
+						$("#msg").html(msg.msg);
+					}
+				}
+			});
+		}
+		
+		function login2Server(data){
+			$.ajax({
+				type : 'POST',
+				url : './user/login.do',
+				data : JSON.stringify(data),
+				success : function(msg) {
+					console.log("data = " + msg);
+					if (msg.status == 200) {
+						if(level == 1){
+							$(window.location).attr('href', './main.html');
+						}else{
+							$(window.location).attr('href', './orders.html');
+						}
+					} else {
+						$("#warn").removeClass("hidden");
+						$("#msg").html(msg.msg);
+					}
+
+				},
+				error :function(msg){
+					console.log("err" + msg);
+				},
+				dataType : 'json',
+				contentType : "application/json"
+			});
+		}
+		
+		function login() {
+			$("#form").submit(function(e) {
+				var value = $("#user_code").val();
+				var passwd = $("#password").val();
+				var data = {
+					userCode : value,
+					password : passwd
+				};
+				login2Server(data);
+				e.preventDefault(); /* 阻止默认动作，非常重要 */
+			});
+		}
+
 		$("#user_code").on('input', function(e) {
 			var value = $(this).val();
 			var passwd = $("#password").val();
+			$("#warn").addClass("hidden");
+			$("#password-group").addClass("hidden");
 			if (value && value.length == 5) {
-				console.log("ok");
-				var data = {};
-				data.userCode = value;
-				data.password = passwd;
-				$.ajax({
-					type : 'POST',
-					url : './user/login.do',
-					data : JSON.stringify(data),
-					success : function(msg) {
-						console.log("data = " + msg.data);
-						$(window.location).attr('href', './main.html');
-					},
-					dataType : 'json',
-					contentType : "application/json"
-				});
-				$("#password-group").removeClass("hidden");
-
+				checkLevel(value);
 			} else if (value.length > 5) {
 				$(this).val(value.substring(0, 5));
-				$("#usercodegrp").addClass("has-warning");
 			}
 			console.log(value);
 		});
 
-		$("form").submit(function(e) {
-			// if()
-		});
 	</script>
 
 </body>

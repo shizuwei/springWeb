@@ -14,11 +14,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.github.pagehelper.PageHelper;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.shizuwei.controller.common.constants.WebConstantsUtil;
 import com.shizuwei.dal.common.page.PageBean;
 import com.shizuwei.dal.common.page.PaginationContext;
 import com.shizuwei.dal.main.dao.ImgMapper;
 import com.shizuwei.dal.main.po.Img;
 import com.shizuwei.dal.main.po.ImgInfo;
+import com.shizuwei.service.dto.request.ImgListRequestDto;
 import com.shizuwei.service.main.ImgService;
 
 import net.coobird.thumbnailator.Thumbnails;
@@ -30,12 +34,27 @@ public class ImgSeriviceImpl implements ImgService {
 	private ImgMapper imgMapper;
 
 	@Override
+	public List<String> getFolders() {
+		List<String> folders = Lists.newArrayList();
+		File path = new File(WebConstantsUtil.getDestFilePath());
+		Preconditions.checkArgument(path.exists());
+		Preconditions.checkArgument(path.isDirectory());
+		File[] tempList = path.listFiles();
+		for (int i = 0; i < tempList.length; i++) {
+			if (tempList[i].isDirectory()) {
+				folders.add(tempList[i].getName());
+			}
+		}
+		return folders;
+	}
+
+	@Override
 	public String saveImg(String folder, int width, int height, MultipartFile from) throws IOException {
 		logger.debug("folder = {}, width = {}, height = {}", folder, width, height);
-		String destFilePath = "D://test/";
+
 		String fileName = from.getOriginalFilename();
-		String pathname = destFilePath + folder + "/";
-		destFilePath = pathname + fileName;
+		String pathname = WebConstantsUtil.getDestFilePath() + folder + "/";
+		String destFilePath = pathname + fileName;
 		logger.debug("pathname = {}", pathname);
 		File path = new File(pathname);
 		if (!path.exists()) {
@@ -63,14 +82,12 @@ public class ImgSeriviceImpl implements ImgService {
 
 	@Override
 	@Transactional(readOnly = true, propagation = Propagation.REQUIRED)
-	public PageBean<ImgInfo> list(String folder) {
-		Img img = new Img();
-		img.setFolder(folder);
+	public PageBean<ImgInfo> list(ImgListRequestDto imgListRequsetDto) {
 		Integer pageNum = PaginationContext.getPageNum() == null ? 1 : PaginationContext.getPageNum();
-		Integer pageSize = 20;
+		Integer pageSize = PaginationContext.getPageSize();
+		logger.debug("pageNum={},pageSize={}", pageNum, pageSize);
 		PageHelper.startPage(pageNum, pageSize);
-		List<ImgInfo> list = imgMapper.listDetail(img);
-
+		List<ImgInfo> list = imgMapper.listDetail(imgListRequsetDto);
 		PageBean<ImgInfo> imgInfos = new PageBean<>(list);
 		return imgInfos;
 	}

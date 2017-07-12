@@ -1,4 +1,4 @@
-var app = angular.module("app", []);
+var app = angular.module("app", ['ui.bootstrap']);
 
 app.controller('myController', function($scope, $http, switchSerivce, imgService) {
 	$scope.user =  {};
@@ -8,27 +8,17 @@ app.controller('myController', function($scope, $http, switchSerivce, imgService
 	$scope.navs = [
 		{
 			name:"首页",
-			active:true
+			active:false
 		},
 		{
 			name:"后台",
-			active:false
+			active:true
 		},
 	];
 	
 	function updateAll(){
 		
-		$http({
-			 method:'POST', 
-			 url:'user/list.do', 
-			 data: {}  
-		}).success(function(response){
-			console.log(JSON.stringify(response));	
-			if(response.status == 200)
-			{
-				$scope.user.list = response.data;
-			}
-		});
+		imgService.update($scope);
 	}
 
 	function init(){
@@ -47,6 +37,19 @@ app.controller('myController', function($scope, $http, switchSerivce, imgService
 			}
 		});
 		
+	  
+       $scope.setPage = function (pageNo) {
+    	    $scope.currentPage = pageNo;
+       };
+       $scope.pageChanged = function () {
+           console.log("pageNo="+ $scope.currentPage);
+       };
+       
+       $scope.maxSize = 5;
+       $scope.totalItems = 0;
+       $scope.currentPage = 1;
+		
+		
 		$http({
 			 method:'POST', 
 			 url:'order/status.do', 
@@ -59,8 +62,55 @@ app.controller('myController', function($scope, $http, switchSerivce, imgService
 			}
 		});
 		
+		$http({
+			 method:'POST', 
+			 url:'user/list.do', 
+			 data: {}  
+		}).success(function(response){
+			console.log(JSON.stringify(response));	
+			if(response.status == 200)
+			{
+				$scope.user.list = response.data;
+			}
+		});
+		
+		$http({
+			 method:'POST', 
+			 url:'img/listFolder.do', 
+			 data: {}  
+		}).success(function(response){
+			console.log(JSON.stringify(response));	
+			if(response.status == 200)
+			{
+				$scope.folders = response.data;
+			}
+		});
+		
 		updateAll();
 		
+	}
+	
+	$scope.pageselect = function(){
+		
+		  console.log("pageNo="+ $scope.currentPage);
+          imgService.update($scope);
+	}
+	
+	$scope.user.logout = function(){
+		
+		$http({
+			 method:'POST', 
+			 url:'./user/logout.do', 
+			 data: {}  
+		}).success(function(response){
+			console.log(JSON.stringify(response));	
+			if(response.status == 200)
+			{
+				console.log("logout success!");
+				$(window.location).attr('href', './login.html');
+			}
+		});
+
 	}
 	
 	
@@ -164,10 +214,10 @@ app.controller('myController', function($scope, $http, switchSerivce, imgService
     $scope.img.upload = function() {
     	console.log("start upload img..");
     	imgService.upload();
+    	$scope.folder = $('#img-folder').val();
+    	$scope.folders.push($scope.folder);
     	console.log("upload img..");
     }
-
-
 
 	$scope.img.delete = function(){
 		imgService.delete($scope);
@@ -239,10 +289,10 @@ app.controller('myController', function($scope, $http, switchSerivce, imgService
 	$scope.order.addOrder = function(){
 		var curImg = $scope.img.cur;
 		var curGood = $scope.good.cur;
-		var curUserId = $scope.selectedUserId;
-		var curOrderStatus = $scope.selectedOrderstatus;
-		var curGoodCnt = $scope.curGoodCnt;
-		var curGoodsStatus = $scope.selectedGoodsStatus;
+		var curUserId = parseInt($scope.selectedUserId);
+		var curOrderStatus = parseInt($scope.selectedOrderstatus);
+		var curGoodCnt = parseInt($scope.curGoodCnt);
+		var curGoodsStatus = parseInt($scope.selectedGoodsStatus);
 		console.log("addOrder...");
 		
 		var order = {goodsId:curGood.goodsId,goodsCnt:curGoodCnt,orderStatus:curOrderStatus,goodsStatus:curGoodsStatus,userId:curUserId};
@@ -254,7 +304,19 @@ app.controller('myController', function($scope, $http, switchSerivce, imgService
 				console.log(JSON.stringify(response));	
 				if(response.status == 200)
 				{	
-					order;
+					var hasOrder = false;
+					if(curGood.orders != null || curGood.orders.length == 0){
+						for(var i = 0; i < curGood.orders.length; i++ ){
+							var o = curGood.orders[i];
+							if(o.userId == curUserId){
+								hasOrder = true;
+							}
+						}
+					}
+					if(!hasOrder){
+						response.data.order.orderGoods=[order];
+						curGood.orders.push(response.data.order);
+					}
 					console.log("..ok!")
 				}else{
 					console.log("..fail!")
@@ -264,7 +326,7 @@ app.controller('myController', function($scope, $http, switchSerivce, imgService
 	}
 	
 	$scope.order.finishEdit = function(){
-		imgService.update();
+		imgService.update($scope);
 	}
 	
 	$scope.order.editOrder = function(orderGoods,event){
@@ -281,7 +343,7 @@ app.controller('myController', function($scope, $http, switchSerivce, imgService
 				if(response.status == 200)
 				{
 					$(event.target).toggleClass("spin");
-					updateAll();
+					// updateAll();
 					console.log("..ok!")
 				}else{
 					console.log("..fail!")
@@ -336,8 +398,16 @@ app.service('switchSerivce', function() {
 app.service('imgService', function($http) {
 
 	this.update = function($scope) {
-		$http({url:"./img/list.do",params:{folder:"2017-06-26"}}).success(function(data,status,headers,config){
+		$http({url:"./img/list.do",
+			 method:'POST', 
+			params:{pageNum:$scope.currentPage,pageSize:$scope.maxSize}, 
+			data:{folder:$scope.folder,userId:$scope.userId, orderStatus:$scope.orderStatus, goodsStatus:$scope.goodsStatus}
+		})
+		.success(function(data,status,headers,config){
 			$scope.imgs = data.data;
+			if(data.pageDto){
+				$scope.totalItems = data.pageDto.count;
+			}
 			console.log(JSON.stringify(data));
 		});
 	}

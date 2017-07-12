@@ -22,7 +22,11 @@
     	<typeAlias alias="ImgInfo" type="com.shizuwei.dal.main.po.ImgInfo"/>
     	<typeAlias alias="OrderGoodsInfo" type="com.shizuwei.dal.main.po.OrderGoodsInfo"/>
     	<typeAlias alias="GoodsInfo" type="com.shizuwei.dal.main.po.GoodsInfo"/>
-    	<typeAlias alias="OrderListReqestDto" type="com.shizuwei.service.dto.request.OrderListReqestDto"/>
+    	<typeAlias alias="OrderListRequestDto" type="com.shizuwei.service.dto.request.OrderListRequestDto"/>
+    	<typeAlias alias="ImgListRequestDto" type="com.shizuwei.service.dto.request.ImgListRequestDto"/>
+    	<typeAlias alias="OrderInfoResponseDto" type="com.shizuwei.service.dto.response.OrderInfoResponseDto"/>
+    	<typeAlias alias="OrderGoodsResponseDto" type="com.shizuwei.service.dto.response.OrderGoodsResponseDto"/>
+    	
     </typeAliases>  
     <!-- 实体接口映射资源 -->  
     <!-- 

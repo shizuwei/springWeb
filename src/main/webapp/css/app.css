@@ -65,6 +65,36 @@ img.left-top{
 	z-index: 20;
 }
 
+
+.titlebar{
+	margin:0;
+	padding:0px;
+	border:0px;
+	display:inline-block;
+}
+
+.titlebar *{
+	display:inline-block;
+	width:auto;
+}
+
+.titlebar label{
+	padding-left:10px;
+}
+
+.titlebar select{
+	height:34px;
+}
+
+
+
+
+
+
+
+
+
+
 .spin{
 -webkit-transform-origin: 50% 50%;
 transform-origin:50% 50%;

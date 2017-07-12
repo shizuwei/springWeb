@@ -13,7 +13,7 @@ import com.shizuwei.controller.dto.OrderInfoListRequestDto;
 import com.shizuwei.dal.common.page.PageBean;
 import com.shizuwei.dal.main.constants.GoodsStatus;
 import com.shizuwei.dal.main.constants.OrderStatus;
-import com.shizuwei.dal.main.po.Order;
+import com.shizuwei.dal.main.po.OrderInfo;
 import com.shizuwei.service.main.MainService;
 
 @Controller
@@ -25,7 +25,7 @@ public class MainController {
 	@RequestMapping(value = "main/list.do", method = { RequestMethod.POST, RequestMethod.GET })
 	public String list(@ModelAttribute("param") OrderInfoListRequestDto infoRequst, Model model) {
 		logger.debug("infoRquest = {}", infoRequst);
-		PageBean<Order> orders = mainService.listOrder(infoRequst);
+		PageBean<OrderInfo> orders = mainService.listOrder(infoRequst);
 		logger.debug("orders = {}", orders);
 		model.addAttribute("orders", orders.getList());
 		model.addAttribute("page", orders);
@@ -37,7 +37,7 @@ public class MainController {
 	@RequestMapping(value = "main/edit.do", method = { RequestMethod.POST, RequestMethod.GET })
 	public String edit(@ModelAttribute("param") OrderInfoListRequestDto infoRequst, Model model) {
 		logger.debug("infoRquest = {}", infoRequst);
-		PageBean<Order> orders = mainService.listOrder(infoRequst);
+		PageBean<OrderInfo> orders = mainService.listOrder(infoRequst);
 		logger.debug("orders = {}", orders);
 		model.addAttribute("orders", orders.getList());
 		model.addAttribute("page", orders);

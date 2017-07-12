@@ -56,11 +56,17 @@
 		delete from webdata.order where
 		order_id=#{orderId}
 	</delete>
+	
+	
+	<update id="updateOrderTotalPriceById" parameterType="int">
+		update webdata.order o, (SELECT sum(order_goods_price) as total, order_id from order_goods group by order_id) og set o.order_total_price = og.total where og.order_id = o.order_id and o.order_id = #{id};
+	</update>
+	
 
 	<resultMap type="Order" id="orderInfoMap" extends="baseOrderMap">
 		<collection property="goodsList" resultMap="orderGoodsMap" />
 	</resultMap>
-
+	
 	<resultMap id="orderGoodsMap" type="OrderGoodsInfo" extends="com.shizuwei.dal.main.dao.OrderGoodsMapper.baseOrderGoodsMap">
 		<association property="goods" javaType="Goods" resultMap="com.shizuwei.dal.main.dao.GoodsMapper.baseGoodsMap" />
 	</resultMap>
@@ -93,18 +99,18 @@
 		</where>
 	</sql>
 
-	<select id="listWithGoods" parameterType="OrderListReqestDto" resultMap="orderInfoMap">
+	<select id="listWithGoods" parameterType="OrderListRequestDto" resultMap="orderInfoMap">
 		select *
 		<include refid="selectFromSql" />
 		<include refid="selectWhereSql" />
-		webdata.order by order_time desc
+		webdata.order by order_id asc
 	</select>
 
-	<select id="listOrderIds" parameterType="OrderListReqestDto" resultType="int">
+	<select id="listOrderIds" parameterType="OrderListRequestDto" resultType="int">
 		select o.order_id
 		<include refid="selectFromSql" />
 		<include refid="selectWhereSql" />
-		order by order_time desc
+		order by order_id asc
 	</select>
 
 	<select id="listWithGoodsByIds" parameterType="java.util.List"
@@ -120,7 +126,36 @@
 				</foreach>
 			</if>
 		</where>
-		order by order_time desc
+		order by order_id asc
 	</select>
+	
+	
+	<resultMap type="OrderInfoResponseDto" id="orderInfoResponseDtoMap" extends="baseOrderMap">
+		<collection property="orderGoods" resultMap="orderGoodsResponseDtoMap" />
+	</resultMap>
 
+
+	<resultMap  type="OrderGoodsResponseDto" id="orderGoodsResponseDtoMap" extends="com.shizuwei.dal.main.dao.OrderGoodsMapper.baseOrderGoodsMap">
+		<result property="imgURL" column="img_url" />
+	</resultMap>
+	
+	
+	<select id="listOrders" parameterType="OrderListRequestDto" resultMap="orderInfoResponseDtoMap">
+		SELECT o.*,img_url,og.goods_cnt,og.goods_status,og.order_goods_id,og.order_status,og.order_goods_price,goods.goods_freight,goods.goods_id,goods.goods_price FROM webdata.order o JOIN order_goods og ON og.order_id = o.order_id JOIN goods ON goods.goods_id = og.goods_id JOIN img ON img.img_id = goods.img_id
+		<where>
+			<if test="userId != null">
+				AND o.user_id=#{userId}
+			</if>
+			<if test="orderStatus != null">
+				AND og.order_status=#{orderStatus}
+			</if>
+			<if test="goodsStatus != null">
+				AND og.goods_status=#{goodsStatus}
+			</if>
+			<if test="folder != null">
+				AND folder=#{folder}
+			</if>
+		</where>
+	</select>
+	
 </mapper>

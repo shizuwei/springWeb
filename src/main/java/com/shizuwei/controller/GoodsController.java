@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.common.collect.Maps;
 import com.shizuwei.controller.common.response.Response;
-import com.shizuwei.controller.common.response.ResponseBuilder;
 import com.shizuwei.dal.main.constants.GoodsStatus;
 import com.shizuwei.dal.main.constants.OrderStatus;
 import com.shizuwei.dal.main.po.Goods;
@@ -34,9 +32,8 @@ public class GoodsController {
 	private GoodsService goodsService;
 
 	@RequestMapping(value = "goods/importGoods.json", method = { RequestMethod.POST, RequestMethod.GET })
-	public @ResponseBody Map<String, Object> importGoods(@RequestParam(value = "path") String path, Model model) {
+	public @ResponseBody Map<String, Object> importGoods(@RequestParam(value = "path") String path) {
 		logger.debug("path = {}", path);
-
 		Map<String, Object> response = Maps.newHashMap();
 		path = goodsService.importGoods(path);
 		response.put("path", path);
@@ -49,34 +46,37 @@ public class GoodsController {
 		Integer id = this.goodsService.insert(goods);
 		Map<String, Object> data = Maps.newHashMap();
 		data.put("id", id);
-		return new ResponseBuilder().setData(data).build();
+		return Response.data(data);
 	}
-	
 
 	@RequestMapping(value = "goods/editSize.do", method = { RequestMethod.POST, RequestMethod.GET })
 	public @ResponseBody Response editSize(@RequestBody Goods goods) {
 		logger.debug("add goods = {}", goods);
 		this.goodsService.edit(goods);
-		return new ResponseBuilder().setData(null).build();
+		return Response.done();
 	}
 
 	@RequestMapping(value = "goods/delete.do", method = { RequestMethod.POST, RequestMethod.GET })
 	public @ResponseBody Response delete(@RequestBody GoodsInfo goods) {
-		logger.debug("goods = {}", goods);
-		//this.goodsService.delete(goods.getId());
-		return new ResponseBuilder().setData(true).build();
+		try {
+			logger.debug("goods = {}", goods);
+			this.goodsService.delete(goods.getGoodsId());
+			return Response.data(true);
+		} catch (Exception e) {
+			return Response.error(e.getMessage());
+		}
 	}
 
 	@RequestMapping(value = "goods/status.do", method = { RequestMethod.POST, RequestMethod.GET })
 	public @ResponseBody Response goodsStatus() {
 		logger.debug("{}", Arrays.asList(GoodsStatus.values()));
-		return new ResponseBuilder().setData(Arrays.asList(GoodsStatus.values())).build();
+		return Response.data(Arrays.asList(GoodsStatus.values()));
 	}
 
 	@RequestMapping(value = "order/status.do", method = { RequestMethod.POST, RequestMethod.GET })
 	public @ResponseBody Response orderStatus() {
 		ArrayList<OrderStatus> arrayList = new ArrayList<OrderStatus>(Arrays.asList(OrderStatus.values()));
-		return new ResponseBuilder().setData(arrayList).build();
+		return Response.data(arrayList);
 	}
 
 	@RequestMapping(value = "goods/getPic.do", method = { RequestMethod.POST, RequestMethod.GET })

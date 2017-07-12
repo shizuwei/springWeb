@@ -39,7 +39,7 @@
 				and folder = #{folder}
 			</if>
 		</where>
-		order by update_time desc
+		order by img_id asc
 	</select>
 
 	<insert id="insert" useGeneratedKeys="true" keyProperty="imgId" parameterType="Img">
@@ -77,7 +77,7 @@
 		<collection property="goods" notNullColumn="goods_id" resultMap="goodsInfoMap" />
 	</resultMap>
 	
-	<select id="listDetail" parameterType="Img" resultMap="imgInfoMap">
+	<select id="listDetail" parameterType="ImgListRequestDto" resultMap="imgInfoMap">
 		SELECT img.*,g.goods_id,g.goods_name,g.goods_number,g.goods_price,g.goods_size,o.*,
 		og.order_goods_id,og.goods_cnt,og.goods_status,og.order_status,g.goods_freight,og.order_goods_price,
 		u.wx_name,u.account_number,u.level
@@ -86,17 +86,20 @@
 		LEFT JOIN webdata.order o ON o.order_id = og.order_id
 		LEFT JOIN user u ON u.user_id = o.user_id
 		<where>
-			<if test="imgName!=null">
-				and img.img_name like '%#{imgName}%'
-			</if>
-			<if test="imgId!=null">
-				and img.img_id = #{imgId}
-			</if>
 			<if test="folder!=null">
-				and img.folder = #{folder}
+				and img.folder = '${folder}'
+			</if>
+			<if test="goodsStatus != null">
+				and og.goods_status = ${goodsStatus}
+			</if>
+			<if test="orderStatus != null">
+				and og.order_status = ${orderStatus}
+			</if>
+			<if test="userId != null">
+				and o.user_id =${userId}
 			</if>
 		</where>
-		order by img.update_time desc
+		order by img.img_id asc
 	</select>
 
 </mapper>

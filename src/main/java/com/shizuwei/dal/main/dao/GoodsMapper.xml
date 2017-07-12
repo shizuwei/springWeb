@@ -55,7 +55,7 @@
 				and brand_name like '%#{brandName}%'
 			</if>
 		</where>
-		order by update_time desc
+		order by goodsId asc
 	</select>
 
 	<insert id="insert" useGeneratedKeys="true" keyProperty="goodsId" parameterType="Goods">

@@ -17,9 +17,9 @@ import com.shizuwei.dal.common.page.PageBean;
 import com.shizuwei.dal.common.page.PaginationContext;
 import com.shizuwei.dal.main.dao.OrderMapper;
 import com.shizuwei.dal.main.dao.UserMapper;
-import com.shizuwei.dal.main.po.Order;
+import com.shizuwei.dal.main.po.OrderInfo;
 import com.shizuwei.dal.main.po.User;
-import com.shizuwei.service.dto.request.OrderListReqestDto;
+import com.shizuwei.service.dto.request.OrderListRequestDto;
 import com.shizuwei.service.main.MainService;
 
 @Service("mainService")
@@ -34,9 +34,9 @@ public class MainServiceImpl implements MainService {
 
 	@Override
 	@Transactional(readOnly = true, propagation = Propagation.REQUIRED)
-	public PageBean<Order> listOrder(OrderInfoListRequestDto infoRequst) {
+	public PageBean<OrderInfo> listOrder(OrderInfoListRequestDto infoRequst) {
 
-		OrderListReqestDto order = new OrderListReqestDto();
+		OrderListRequestDto order = new OrderListRequestDto();
 		if (infoRequst != null) {
 			order.setOrderStatus(infoRequst.getPayStatus());
 			order.setGoodsStatus(infoRequst.getArriveStatus());
@@ -53,8 +53,8 @@ public class MainServiceImpl implements MainService {
 		List<Integer> ids = orderMapper.listOrderIds(order);
 		logger.debug("ids={}", ids);
 		PageBean<Integer> idsBean = new PageBean<>(ids);
-		List<Order> orders = orderMapper.listWithGoodsByIds(ids);
-		PageBean<Order> orderBean = new PageBean<>();
+		List<OrderInfo> orders = orderMapper.listWithGoodsByIds(ids);
+		PageBean<OrderInfo> orderBean = new PageBean<>();
 		orderBean.setList(orders);
 		orderBean.setPageNum(idsBean.getPageNum());
 		orderBean.setTotal(idsBean.getTotal());

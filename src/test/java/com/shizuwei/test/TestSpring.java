@@ -1,6 +1,6 @@
 package com.shizuwei.test;
 
-import javax.annotation.Resource;
+/*import javax.annotation.Resource;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,8 +17,8 @@ import com.shizuwei.service.main.ImgService;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
-import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.transaction.annotation.Transactional;*/
+/*
 @SuppressWarnings("deprecation")
 @RunWith(SpringJUnit4ClassRunner.class)
 @TransactionConfiguration(transactionManager = "txManager", defaultRollback = true)
@@ -47,3 +47,4 @@ public class TestSpring extends AbstractTransactionalJUnit4SpringContextTests {
 	}
 
 }
+*/

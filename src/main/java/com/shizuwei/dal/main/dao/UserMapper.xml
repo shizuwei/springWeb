@@ -35,6 +35,7 @@
 				and account_number = #{accountNumber}
 			</if>
 		</where>
+		order by user_id asc
 	</select>
 
 	<insert id="insert" useGeneratedKeys="true" keyProperty="userId"

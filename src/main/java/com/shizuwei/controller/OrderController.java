@@ -1,5 +1,8 @@
 package com.shizuwei.controller;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
@@ -10,10 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.google.common.collect.Maps;
+import com.shizuwei.controller.common.AuthInfo;
 import com.shizuwei.controller.common.response.Response;
-import com.shizuwei.controller.common.response.ResponseBuilder;
+import com.shizuwei.dal.main.po.Order;
 import com.shizuwei.dal.main.po.OrderGoods;
 import com.shizuwei.service.dto.request.OrderAddRequest;
+import com.shizuwei.service.dto.request.OrderListRequestDto;
+import com.shizuwei.service.dto.response.OrderInfoResponseDto;
 import com.shizuwei.service.main.OrderService;
 
 @Controller
@@ -25,10 +32,10 @@ public class OrderController {
 	@RequestMapping(value = "order/add.do", method = { RequestMethod.POST, RequestMethod.GET })
 	public @ResponseBody Response addOrder(@RequestBody OrderAddRequest order) {
 		logger.debug("order = {}", order);
-		this.orderService.addOrder(order);
-		// Map<String, Object> data = Maps.newHashMap();
-		// data.put("id", order.getOrderId());
-		return new ResponseBuilder().setData(null).build();
+		Order orderOf = this.orderService.addOrder(order);
+		Map<String, Object> data = Maps.newHashMap();
+		data.put("order", orderOf);
+		return Response.data(data);
 	}
 	
 	
@@ -36,13 +43,23 @@ public class OrderController {
 	public @ResponseBody Response editOrderGoods(@RequestBody OrderGoods orderGoods) {
 		logger.debug("orderGoods = {}", orderGoods);
 		this.orderService.editOrderGoods(orderGoods);
-		return new ResponseBuilder().setData(null).build();
+		return Response.done();
 	}
 	
 	@RequestMapping(value = "order/delOrderGoods.do", method = { RequestMethod.POST, RequestMethod.GET })
 	public @ResponseBody Response delOrderGoods(@RequestBody OrderGoods orderGoods) {
 		logger.debug("orderGoods = {}", orderGoods);
 		this.orderService.delOrderGoods(orderGoods);
-		return new ResponseBuilder().setData(null).build();
+		return Response.done();
+	}
+	
+	@RequestMapping(value = "order/getOrders.do", method = { RequestMethod.POST, RequestMethod.GET })
+	public @ResponseBody Response getOrders(@RequestBody OrderListRequestDto orderListRequestDto) {
+		if(orderListRequestDto.getUserId() == null){
+			orderListRequestDto.setUserId(AuthInfo.getUser().getUserId());
+		}
+		logger.debug("orderListRequestDto = {}", orderListRequestDto);
+		List<OrderInfoResponseDto> list = this.orderService.getOrders(orderListRequestDto);
+		return Response.data(list);
 	}
 }

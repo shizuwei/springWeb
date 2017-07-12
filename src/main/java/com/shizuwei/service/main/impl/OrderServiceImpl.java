@@ -25,6 +25,8 @@ import com.shizuwei.dal.main.po.Order;
 import com.shizuwei.dal.main.po.OrderGoods;
 import com.shizuwei.dal.main.po.User;
 import com.shizuwei.service.dto.request.OrderAddRequest;
+import com.shizuwei.service.dto.request.OrderListRequestDto;
+import com.shizuwei.service.dto.response.OrderInfoResponseDto;
 import com.shizuwei.service.main.OrderService;
 
 @Service("orderService")
@@ -43,7 +45,7 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-	public void addOrder(OrderAddRequest orderAddRequest) {
+	public Order addOrder(OrderAddRequest orderAddRequest) {
 		Preconditions.checkNotNull(orderAddRequest.getGoodsCnt());
 		Preconditions.checkNotNull(orderAddRequest.getOrderStatus());
 		Preconditions.checkNotNull(orderAddRequest.getGoodsStatus());
@@ -56,29 +58,36 @@ public class OrderServiceImpl implements OrderService {
 		BigDecimal goodsPrice = goods.getGoodsPrice();
 		Preconditions.checkNotNull(goodsPrice);
 		Preconditions.checkNotNull(goods.getImgId());
-		/** 寻找order,一个用户一次folder只需一个order **/
+
 		Img img = this.imgMapper.getById(goods.getImgId());
 		Preconditions.checkNotNull(img);
 		Preconditions.checkNotNull(img.getFolder());
 
+		/** 寻找order,一个用户一次folder只需一个order **/
 		List<Order> orders = this.orderMapper.getByFolder(orderAddRequest.getUserId(), img.getFolder());
 		Order order = null;
+
+		// 如果没有order，则直接生成一个order
 		if (CollectionUtils.isEmpty(orders)) {
 			order = new Order();
 			order.setOrderTime(new Date());
 			order.setOrderTotalPrice(goods.getGoodsPrice().multiply(new BigDecimal(orderAddRequest.getGoodsCnt())));
 			order.setOrderFolder(img.getFolder());
 			order.setUserId(orderAddRequest.getUserId());
-			logger.debug("add Order={}", order);
+			logger.debug("add Order = {}", order);
 			this.orderMapper.insert(order);
 		} else {
-			Preconditions.checkArgument(orders.size() == 1);
+			Preconditions.checkArgument(orders.size() == 1, "一个用户一次促销只能有一个订单");
 			order = orders.get(0);
-			order.setOrderTotalPrice(order.getOrderTotalPrice()
-					.add(goods.getGoodsPrice().multiply(new BigDecimal(orderAddRequest.getGoodsCnt()))));
+			Preconditions.checkArgument(order.getUserId().equals(orderAddRequest.getUserId()), "userId not equal");
+			BigDecimal orderTotalPrice = order.getOrderTotalPrice()
+					.add(goods.getGoodsPrice().multiply(new BigDecimal(orderAddRequest.getGoodsCnt())));
+			order.setOrderTotalPrice(orderTotalPrice);
 			logger.debug("update Order={}", order);
 			this.orderMapper.update(order);
 		}
+
+		// orderGoods加入
 		OrderGoods orderGoods = new OrderGoods();
 		orderGoods.setGoodsCnt(orderAddRequest.getGoodsCnt());
 		orderGoods.setGoodsId(orderAddRequest.getGoodsId());
@@ -89,7 +98,7 @@ public class OrderServiceImpl implements OrderService {
 		orderGoods.setUserId(orderAddRequest.getUserId());
 		logger.debug("add orderGoods={}", orderGoods);
 		this.orderGoodsMapper.insert(orderGoods);
-
+		return order;
 	}
 
 	@Override
@@ -106,7 +115,7 @@ public class OrderServiceImpl implements OrderService {
 		Preconditions.checkArgument(orderGoods.getUserId().equals(toDelOrderGoods.getUserId()));
 
 		Order toDelOrder = this.orderMapper.getById(orderGoods.getOrderId());
-		Preconditions.checkNotNull(toDelOrder);
+		Preconditions.checkArgument(toDelOrder != null && toDelOrder.getOrderTotalPrice() != null);
 		if (toDelOrder.getOrderTotalPrice().compareTo(toDelOrderGoods.getOrderGoodsPrice()) <= 0) {
 			this.orderMapper.delById(orderGoods.getOrderId());
 		} else {
@@ -114,9 +123,7 @@ public class OrderServiceImpl implements OrderService {
 			toDelOrder.setOrderTotalPrice(price);
 			this.orderMapper.update(toDelOrder);
 		}
-
 		this.orderGoodsMapper.delById(orderGoods.getOrderGoodsId());
-
 	}
 
 	@Override
@@ -128,17 +135,35 @@ public class OrderServiceImpl implements OrderService {
 		Preconditions.checkNotNull(orderGoods.getUserId());
 		OrderGoods toEditOrderGoods = this.orderGoodsMapper.getById(orderGoods.getOrderGoodsId());
 		Preconditions.checkNotNull(toEditOrderGoods);
+		Goods goods = this.goodsMapper.getById(orderGoods.getGoodsId());
+		Preconditions.checkNotNull(goods);
+
 		if (orderGoods.getUserId().equals(toEditOrderGoods.getUserId())) {
+			// 没有修改用户
+			if (orderGoods.getGoodsCnt() != null && !toEditOrderGoods.getGoodsCnt().equals(orderGoods.getGoodsCnt())) {
+				// 修改了商品数量
+				orderGoods.setOrderGoodsPrice(
+						goods.getGoodsPrice().multiply(BigDecimal.valueOf(toEditOrderGoods.getGoodsCnt())));
+			}
 			this.orderGoodsMapper.update(orderGoods);
+
 		} else {
+			// 修改用户
 			delOrderGoods(toEditOrderGoods);
 			OrderAddRequest orderAddRequest = new OrderAddRequest();
 			orderAddRequest.setGoodsCnt(orderGoods.getGoodsCnt());
 			orderAddRequest.setGoodsId(orderGoods.getGoodsId());
-			orderAddRequest.setGoodsStatus(orderGoods.getGoodsStatus());
-			orderAddRequest.setOrderStatus(orderGoods.getGoodsStatus());
+			orderAddRequest.setGoodsStatus(orderGoods.getGoodsStatus() == null ? toEditOrderGoods.getGoodsStatus()
+					: orderGoods.getGoodsStatus());
+			orderAddRequest.setOrderStatus(orderGoods.getOrderStatus() == null ? toEditOrderGoods.getOrderStatus()
+					: orderGoods.getOrderStatus());
 			orderAddRequest.setUserId(orderGoods.getUserId());
 			this.addOrder(orderAddRequest);
 		}
+	}
+
+	@Override
+	public List<OrderInfoResponseDto> getOrders(OrderListRequestDto orderListRequestDto) {
+		return this.orderMapper.listOrders(orderListRequestDto);
 	}
 }

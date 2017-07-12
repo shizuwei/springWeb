@@ -3,16 +3,23 @@ package com.shizuwei.service.main.impl;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 import com.shizuwei.dal.main.dao.GoodsMapper;
+import com.shizuwei.dal.main.dao.OrderGoodsMapper;
+import com.shizuwei.dal.main.dao.OrderMapper;
 import com.shizuwei.dal.main.po.Goods;
+import com.shizuwei.dal.main.po.OrderGoods;
 import com.shizuwei.service.main.GoodsService;
 
 @Service
@@ -20,6 +27,12 @@ import com.shizuwei.service.main.GoodsService;
 public class GoodsServiceImpl implements GoodsService {
 	@Resource
 	private GoodsMapper goodsMapper;
+
+	@Resource
+	private OrderGoodsMapper orderGoodsMapper;
+
+	@Resource
+	private OrderMapper orderMapper;
 
 	private static final String basePath = "D:\\PICS\\";
 
@@ -60,15 +73,51 @@ public class GoodsServiceImpl implements GoodsService {
 	@Override
 	public void delete(Integer id) {
 		Preconditions.checkNotNull(id);
+		OrderGoods orderGoods = new OrderGoods();
+		orderGoods.setGoodsId(id);
+		List<OrderGoods> orderGoodsList = this.orderGoodsMapper.list(orderGoods);
+		Preconditions.checkArgument(CollectionUtils.isEmpty(orderGoodsList), "这个尺寸已经关联到了订单无法删除！");
 		this.goodsMapper.delById(id);
 	}
 
 	@Override
 	public void edit(Goods goods) {
-		// TODO Auto-generated method stub
 		Preconditions.checkNotNull(goods.getGoodsId());
+		Goods oldGoods = this.goodsMapper.getById(goods.getGoodsId());
+		Preconditions.checkNotNull(oldGoods, "编辑的产品 id=%d不存在！", goods.getGoodsId());
+		if (goods.getGoodsPrice() != null && !goods.getGoodsPrice().equals(oldGoods.getGoodsPrice())) {
+			// 如果修改的产品的价格，则需要重新计算订单价格
+			OrderGoods orderGoodsQuery = new OrderGoods();
+			orderGoodsQuery.setGoodsId(goods.getGoodsId());
+			List<OrderGoods> orderGoodsList = this.orderGoodsMapper.list(orderGoodsQuery);
+			Set<Integer> orderIds = Sets.newHashSet();
+			if (CollectionUtils.isNotEmpty(orderGoodsList)) {
+				// 如果有关联订单, 则全部更新
+				for (OrderGoods og : orderGoodsList) {
+					BigDecimal orderGoodsPrice = BigDecimal.valueOf(og.getGoodsCnt()).multiply(goods.getGoodsPrice());
+					og.setOrderGoodsPrice(orderGoodsPrice);
+					this.orderGoodsMapper.update(og);
+					orderIds.add(og.getOrderId());
+				}
+			}
+
+			if (CollectionUtils.isNotEmpty(orderIds)) {
+				orderIds.forEach(id -> {
+					this.orderMapper.updateOrderTotalPriceById(id);
+				});
+			}
+
+			// Map<Integer, BigDecimal> orderIdsPriceMap = Maps.newHashMap();
+
+			// 更新order总价
+			/*
+			 * orderIdsPriceMap.forEach((k, v) -> { Order order = new Order();
+			 * order.setOrderId(k); order.setOrderTotalPrice(v);
+			 * this.orderMapper.update(order); });
+			 */
+		}
 		this.goodsMapper.update(goods);
-		
+
 	}
 
 }

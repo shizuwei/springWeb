@@ -19,6 +19,28 @@
 		values(#{userId},#{orderId},#{goodsId},#{goodsCnt},#{orderGoodsPrice},#{orderGoodsDescription},#{goodsStatus},#{orderStatus})
 	</insert>
 
+	<select id="list" parameterType="OrderGoods" resultMap="baseOrderGoodsMap">
+		select * from order_goods
+		<where>
+			<if test="userId != null">
+				and user_id = #{userId}
+			</if>
+			<if test="orderId != null">
+				and order_id = #{orderId}
+			</if>
+			<if test="goodsId != null">
+				and goods_id = #{goodsId}
+			</if>
+			<if test="goodsStatus != null">
+				and goods_status = #{goodsStatus}
+			</if>
+			<if test="orderStatus != null">
+				and order_status = #{orderStatus}
+			</if>
+		</where>
+		order by order_goods_id asc
+	</select>
+
 	<update id="update" parameterType="OrderGoods">
 		update order_goods
 		<set>
@@ -39,9 +61,16 @@
 		order_goods_id=#{id}
 	</delete>
 
-	<select id="getById" parameterType="int" resultType="OrderGoods">
+	<select id="getById" parameterType="int" resultMap="baseOrderGoodsMap">
 		select *
-		from order_goods where order_goods_id=#{id}
+		from
+		order_goods where order_goods_id=#{id}
+	</select>
+
+	<select id="getByParams" parameterType="hashmap" resultMap="baseOrderGoodsMap">
+		select *
+		from order_goods where goods_id=#{goodsId} and
+		user_id=#{userId}
 	</select>
 
 </mapper>

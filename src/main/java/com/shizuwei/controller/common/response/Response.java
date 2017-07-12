@@ -5,72 +5,88 @@ import java.io.Serializable;
 import com.shizuwei.controller.common.dto.PageDto;
 
 public class Response implements Serializable {
+	public static final int OK = 200, ERROR = -1;
 
-    private static final long serialVersionUID = -3458675766341550281L;
-    private int status;
-    private Object data;
-    private ResponseError error;
-    private PageDto pageDto;
+	private static final long serialVersionUID = -3458675766341550281L;
+	private int status;
+	private Object data;
+	private String msg;
+	private PageDto pageDto;
 
-    public Response() {
-        status = ResponseStatus.OK.getValue();
-    }
+	public Response() {
+		status = OK;
+	}
 
-    public Response(ResponseStatus status, Object data) {
-        super();
-        this.status = status.getValue();
-        this.data = data;
-    }
+	public static Response done() {
+		return new Response();
+	}
 
-    public Response(ResponseStatus status, Object data, ResponseError error) {
-        super();
-        this.status = status.getValue();
-        this.data = data;
-        this.error = error;
-    }
+	public static Response data(Object data) {
+		return new Response(OK, data);
+	}
 
-    public int getStatus() {
-        return status;
-    }
+	public static Response error(String msg) {
+		return new Response(ERROR, msg);
+	}
 
+	public Response(int status, Object data) {
+		super();
+		this.status = status;
+		this.data = data;
+	}
 
-    public void setStatus(int status) {
-        this.status = status;
-    }
+	public Response(int status, String msg) {
+		super();
+		this.status = status;
+		this.msg = msg;
+	}
 
-    public Object getData() {
-        return data;
-    }
+	public int getStatus() {
+		return status;
+	}
 
-    public void setData(Object data) {
-        this.data = data;
-    }
+	public Response setStatus(int status) {
+		this.status = status;
+		return this;
+	}
 
-    public ResponseError getError() {
-        return error;
-    }
+	public Object getData() {
+		return data;
+	}
 
-    public void setError(ResponseError error) {
-        this.error = error;
-    }
+	public Response setData(Object data) {
+		this.data = data;
+		return this;
+	}
 
-    /**
-     * @return the pageDto
-     */
+	public String getMsg() {
+		return msg;
+	}
 
-    public PageDto getPageDto() {
+	public Response setMsg(String msg) {
+		this.msg = msg;
+		return this;
+	}
 
-        return pageDto;
+	/**
+	 * @return the pageDto
+	 */
 
-    }
+	public PageDto getPage() {
 
-    /**
-     * @param pageDto the pageDto to set
-     */
+		return pageDto;
 
-    public void setPageDto(PageDto pageDto) {
+	}
 
-        this.pageDto = pageDto;
+	/**
+	 * @param pageDto
+	 *            the pageDto to set
+	 */
 
-    }
+	public Response setPage(PageDto pageDto) {
+
+		this.pageDto = pageDto;
+		return this;
+
+	}
 }
