@@ -437,7 +437,7 @@ app.service('imgService', function($http) {
 		.success(function(data,status,headers,config){
 			$scope.imgs = data.data;
 			if(data.page){
-				$scope.totalItems = data.page.count + 1;
+				$scope.totalItems = data.page.count;
 			}
 			updateCheckStatus($scope);
 			console.log(JSON.stringify(data));

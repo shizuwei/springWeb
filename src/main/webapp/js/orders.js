@@ -1,4 +1,4 @@
-var app = angular.module("app",[]);
+var app = angular.module("app", ['ui.bootstrap']);
 
 app.controller('myController', function($scope, $http) {
 	$scope.user =  {};
@@ -43,6 +43,19 @@ app.controller('myController', function($scope, $http) {
 			}
 		});
 		
+		
+		$http({
+			 method:'POST', 
+			 url:'user/cur.do', 
+			 data: {}  
+		}).success(function(response){
+			console.log(JSON.stringify(response));	
+			if(response.status == 200)
+			{
+				$scope.curUser = response.data;
+			}
+		});
+		
   
        $scope.setPage = function (pageNo) {
     	    $scope.currentPage = pageNo;
@@ -54,6 +67,8 @@ app.controller('myController', function($scope, $http) {
        $scope.maxSize = 5;
        $scope.totalItems = 0;
        $scope.currentPage = 1;
+       
+       $scope.search();
 
 	}
 	
@@ -61,8 +76,6 @@ app.controller('myController', function($scope, $http) {
 		  console.log("pageNo="+ $scope.currentPage);
 	}
 
-	init();
-	
 	$scope.user.logout = function(){
 		
 		$http({
@@ -105,6 +118,10 @@ app.controller('myController', function($scope, $http) {
 				var displayOrderGoods = [];
 				var orders = response.data;
 				
+				if(response.page){
+					$scope.totalItems = response.page.count;
+				}
+				
 				for(var i = 0; i < orders.length; i++){
 					var order = orders[i];
 					for(var j = 0; j < order.orderGoods.length; j++){
@@ -129,5 +146,7 @@ app.controller('myController', function($scope, $http) {
 			}
 		});
 	}
+	
+	init();
 	
 });

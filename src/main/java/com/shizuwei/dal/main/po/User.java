@@ -1,5 +1,7 @@
 package com.shizuwei.dal.main.po;
 
+import java.math.BigDecimal;
+
 import lombok.Data;
 
 @Data
@@ -9,6 +11,8 @@ public class User {
 	private String accountNumber;
 	private String password;
 	private Integer level;
+	// 汇率
+	private BigDecimal ratio;
 	
 	public User() {
 		

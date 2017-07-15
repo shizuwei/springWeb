@@ -46,14 +46,14 @@ public class GoodsController {
 		Integer id = this.goodsService.insert(goods);
 		Map<String, Object> data = Maps.newHashMap();
 		data.put("id", id);
-		return Response.data(data);
+		return Response.builder().data(data).create();
 	}
 
 	@RequestMapping(value = "goods/editSize.do", method = { RequestMethod.POST, RequestMethod.GET })
 	public @ResponseBody Response editSize(@RequestBody Goods goods) {
 		logger.debug("add goods = {}", goods);
 		this.goodsService.edit(goods);
-		return Response.done();
+		return Response.builder().create();
 	}
 
 	@RequestMapping(value = "goods/delete.do", method = { RequestMethod.POST, RequestMethod.GET })

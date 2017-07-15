@@ -16,10 +16,13 @@ import com.google.common.base.Preconditions;
 import com.shizuwei.dal.main.dao.GoodsMapper;
 import com.shizuwei.dal.main.dao.OrderGoodsMapper;
 import com.shizuwei.dal.main.dao.OrderMapper;
+import com.shizuwei.dal.main.dao.UserMapper;
 import com.shizuwei.dal.main.po.Goods;
 import com.shizuwei.dal.main.po.OrderGoods;
+import com.shizuwei.dal.main.po.User;
 import com.shizuwei.service.main.GoodsService;
 import com.shizuwei.utils.DebugUtils;
+import com.shizuwei.utils.PriceUtil;
 
 @Service
 @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
@@ -32,6 +35,9 @@ public class GoodsServiceImpl implements GoodsService {
 
 	@Resource
 	private OrderMapper orderMapper;
+
+	@Resource
+	private UserMapper userMapper;
 
 	private static final String basePath = "D:\\PICS\\";
 
@@ -83,9 +89,9 @@ public class GoodsServiceImpl implements GoodsService {
 		return newer.getGoodsPrice() != null && !newer.getGoodsPrice().equals(old.getGoodsPrice());
 	}
 
-	private static boolean isGoodsFreightChanged(Goods newer, Goods old) {
+/*	private static boolean isGoodsFreightChanged(Goods newer, Goods old) {
 		return newer.getGoodsFreight() != null && !newer.getGoodsFreight().equals(old.getGoodsFreight());
-	}
+	}*/
 
 	@Override
 	public void edit(Goods goods) {
@@ -111,13 +117,14 @@ public class GoodsServiceImpl implements GoodsService {
 				for (OrderGoods og : orderGoodsList) {
 					// 从新计算单个产品的价格
 					// 如果运费变了直接用新的运费计算
-					BigDecimal freight = null;
-					if (isGoodsFreightChanged(goods, oldGoods)) {
-						freight = goods.getGoodsFreight();
+					// BigDecimal freight = null;
+					if (goods.getGoodsFreight() == null) {
+						goods.setGoodsFreight(oldGoods.getGoodsFreight());
 					}
+					User user = this.userMapper.getById(og.getUserId());
+					Preconditions.checkNotNull(user, "用户不存在！");
 					// cnt * (goodsPrice + freight) ?? 还有汇率？？
-					BigDecimal orderGoodsPrice = BigDecimal.valueOf(og.getGoodsCnt())
-							.multiply((goods.getGoodsPrice().add(freight)));
+					BigDecimal orderGoodsPrice = PriceUtil.calOrderTotalPrice(goods, og.getGoodsCnt(), user.getRatio());
 					og.setOrderGoodsPrice(orderGoodsPrice);
 					// 更新orderGoodsPrice
 					this.orderGoodsMapper.update(og);

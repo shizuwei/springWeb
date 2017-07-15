@@ -29,7 +29,7 @@
 		<div id="navbar-menu" class="collapse navbar-collapse">
 			<ul class="nav navbar-nav">
 				<li ng-class="active">
-					<a href="#">您的订单</a>
+					 <a href="#"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>【{{curUser.accountNumber}} | {{curUser.wxName}}】的订单</a>
 				</li>
 			</ul>
 		</div>
@@ -42,7 +42,7 @@
 					<span class="titlebar" class="btn btn-success">
 						<label>场次</label>
 						<select class="form-control" ng-model="folder" ng-change="folder" ng-options="f as f for f in folders">
-						<option value="">全部</option>
+							<option value="">全部</option>
 						</select>
 					</span>
 
@@ -84,36 +84,45 @@
 				<tbody>
 					<tr class="row" ng-repeat="order in orders">
 						<td ng-if="order.span > 0" rowspan="{{order.span}}" class="col-md-2 col-2">
-							场次：<br>
-							<span class="label label-primary">{{order.orderFolder}}</span><br>
-							金额：<br>
+							场次：
+							<br>
+							<span class="label label-info">{{order.orderFolder}}</span>
+							<br>
+							金额：
+							<br>
 							<span class="label label-info">{{order.orderTotalPrice}}</span>
 						</td>
-						<td class="col-md-6 col-6"> 
-							<img ng-src="{{order.imgURL}}"/>
+						<td class="col-md-6 col-6">
+							<img ng-src="{{order.imgURL}}" />
 							<div>
-								<span class="label label-primary">名称：{{order.imgName}}</span> <br>
-								<span class="label label-primary">序号：{{order.goodsId}}</span> <br>
-								<span class="label label-primary">单价：{{order.goods.goodsPrice}}元</span>
+								<span class="label label-info">名称：{{order.imgName}}</span>
+								<br>
+								<span class="label label-info">序号：{{order.goodsId}}</span>
+								<br>
+								<span class="label label-info">单价：{{order.goods.goodsPrice}}元</span>
 							</div>
 						</td>
 						<td class="col-md-3 col-3">
-							<span class="label label-default">数量：{{order.goodsCnt}}件</span> <br>
-							<span class="label label-default">运费：{{order.goods.goodsFreight}}元</span><br>
-							<span class="label label-default">汇率：0.75 </span><br>
-							<span class="label label-primary">总价：{{order.orderGoodsPrice}}元</span> 
+							<span class="label label-default">数量：{{order.goodsCnt}}件</span>
+							<br>
+							<span class="label label-default">运费：{{order.goods.goodsFreight}}元</span>
+							<br>
+							<span class="label label-default">汇率：{{curUser.ratio}} </span>
+							<br>
+							<span class="label label-info">总价：{{order.orderGoodsPrice}}元</span>
 						</td>
-						<td class="col-md-1 col-1"> 
-							<span class="label" ng-class="{true:'label-success',false:'label-warning'}[order.orderStatus == 1]">{{order.orderStatusStr}}</span>  <br>
-							<span class="label" ng-class="{true:'label-success',false:'label-warning'}[order.goodsStatus == 1]">{{order.goodsStatusStr}}</span>  
+						<td class="col-md-1 col-1">
+							<span class="label" ng-class="{true:'label-success',false:'label-warning'}[order.orderStatus == 1]">{{order.orderStatusStr}}</span>
+							<br>
+							<span class="label" ng-class="{true:'label-success',false:'label-warning'}[order.goodsStatus >= 1]">{{order.goodsStatusStr}}</span>
 						</td>
 					</tr>
 				</tbody>
 			</table>
-
 			<div>
-				<ul uib-pagination items-per-page="5" total-items="totalItems" ng-change="pageselect()" ng-model="currentPage" max-size="maxSize" first-text="第一页" previous-text="上一页" next-text="下一页" last-text="最后页" boundary-links="true" boundary-link-numbers="true" rotate="false"></ul>
+				<ul uib-pagination total-items="totalItems" ng-change="pageselect()" items-per-page="5" ng-model="currentPage" max-size="maxSize" first-text="第一页" previous-text="上一页" next-text="下一页" last-text="最后页" boundary-links="true" boundary-link-numbers="true" rotate="false"></ul>
 			</div>
+
 		</div>
 	</div>
 	<script src="./js/orders.js"></script>

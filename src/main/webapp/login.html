@@ -186,19 +186,19 @@
 								<a href="#" class="fa fa-question-circle"></a>
 
 								<div class="form-group ">
-								
+
 									<!-- <div class="main-checkbox ">
 										<input type="checkbox" value="None" id="checkbox1" name="check" />
 										<label for="checkbox1"></label>
 									</div> -->
-									
+
 									<!-- <span class="text">记住我</span> -->
 									<br>
 									<button type="submit" class="btn btn-default ">登录</button>
 								</div>
 							</div>
 							<div id="warn" class="alert alert-warning hidden">
-								 <span id="msg"></span>
+								<span id="msg"></span>
 							</div>
 						</form>
 					</div>
@@ -213,8 +213,8 @@
 	</div>
 
 	<script type="text/javascript">
-		level = 0;	
-	
+		level = 0;
+
 		function checkLevel(userCode) {
 			$.ajax({
 				type : 'POST',
@@ -229,20 +229,23 @@
 							level = 1;
 							$("#password-group").removeClass("hidden");
 							login();
-							
-						}else{
+
+						} else {
 							level = 0;
-							login2Server({userCode : userCode,password : "0000"});
+							login2Server({
+								userCode : userCode,
+								password : "0000"
+							});
 						}
-					}else{
+					} else {
 						$("#warn").removeClass("hidden");
 						$("#msg").html(msg.msg);
 					}
 				}
 			});
 		}
-		
-		function login2Server(data){
+
+		function login2Server(data) {
 			$.ajax({
 				type : 'POST',
 				url : './user/login.do',
@@ -250,14 +253,16 @@
 				success : function(msg) {
 					console.log("data = " + msg);
 					if (msg.status == 200) {
-						if(level == 1){
+						setCookie('userCode', data.userCode)
+						if (level == 1) {
 							$(window.location).attr('href', './main.html');
-						}else{
-							if(IsPC()){
-								$(window.location).attr('href', './orders.html');		
-							}
-							else{
-								$(window.location).attr('href', './orders.html');
+						} else {
+							if (IsPC()) {
+								$(window.location)
+										.attr('href', './orders.html');
+							} else {
+								$(window.location)
+										.attr('href', './orders.html');
 							}
 						}
 					} else {
@@ -266,14 +271,14 @@
 					}
 
 				},
-				error :function(msg){
+				error : function(msg) {
 					console.log("err" + msg);
 				},
 				dataType : 'json',
 				contentType : "application/json"
 			});
 		}
-		
+
 		function login() {
 			$("#form").submit(function(e) {
 				var value = $("#user_code").val();
@@ -300,6 +305,43 @@
 			console.log(value);
 		});
 
+		function setCookie(name, value) {
+			var Days = 7;
+			var exp = new Date();
+			exp.setTime(exp.getTime() + Days * 24 * 60 * 60 * 1000);
+			document.cookie = name + "=" + escape(value) + ";expires="
+					+ exp.toGMTString();
+		}
+
+		function getCookie(name) {
+			var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)"); //正则匹配
+			if (arr = document.cookie.match(reg)) {
+				return unescape(arr[2]);
+			} else {
+				return null;
+			}
+		}
+
+		$(function() {
+			var name = getCookie('userCode');
+			$("#user_code").val(name);
+			$(document).keypress(function(e) {
+				switch (e.which) {
+				// enter
+				case 13:
+				case 32: //space
+					value = $("#user_code").val();
+					if (value && value.length == 5) {
+						checkLevel(value);
+					}
+					break;
+
+				// user presses the "s" key  
+				default:
+					console.log("pressed:"+e.which);
+				}
+			});
+		})
 	</script>
 
 </body>

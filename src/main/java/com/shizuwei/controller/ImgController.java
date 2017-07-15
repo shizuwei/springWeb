@@ -43,7 +43,7 @@ public class ImgController {
 				logger.debug("upload file {}", file.getOriginalFilename());
 				imgService.saveImg(folder, width == null ? 0 : width, height == null ? 0 : height, file);
 			}
-			return Response.done();
+			return Response.create();
 		} catch (Exception e) {
 			logger.error("error file upload {} e = {}", file.getOriginalFilename(), e);
 			return Response.error(e.getMessage());
@@ -66,13 +66,7 @@ public class ImgController {
 		//	return Response.error("folder不能为空！");
 		//}
 		PageBean<ImgInfo> list = this.imgService.list(imgListRequsetDto);
-		PageDto pageDto = new PageDto();
-		pageDto.setCount(list.getTotal());
-		pageDto.setCurPageCount(list.getSize());
-		pageDto.setPageNum(list.getPageNum());
-		pageDto.setPageSize(list.getPageSize());
-		pageDto.setTotalPages(list.getPages());
-		return Response.data(list.getList()).setPage(pageDto);
+		return Response.data(list.getList()).setPage(list);
 	}
 	
 	@RequestMapping(value = "img/edit.do", method = { RequestMethod.POST, RequestMethod.GET })
@@ -80,7 +74,7 @@ public class ImgController {
 	public Response edit(@RequestBody ImgInfo img) {
 		logger.debug("img={}", img);
 		this.imgService.update(img);
-		return Response.done();
+		return Response.create();
 	}
 	
 	@RequestMapping(value = "img/delete.do", method = { RequestMethod.POST, RequestMethod.GET })

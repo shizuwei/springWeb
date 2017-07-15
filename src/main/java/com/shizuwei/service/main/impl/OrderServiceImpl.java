@@ -13,7 +13,11 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import com.github.pagehelper.PageHelper;
 import com.google.common.base.Preconditions;
+import com.shizuwei.controller.common.AuthInfo;
+import com.shizuwei.dal.common.page.PageBean;
+import com.shizuwei.dal.common.page.PaginationContext;
 import com.shizuwei.dal.main.dao.GoodsMapper;
 import com.shizuwei.dal.main.dao.ImgMapper;
 import com.shizuwei.dal.main.dao.OrderGoodsMapper;
@@ -21,6 +25,7 @@ import com.shizuwei.dal.main.dao.OrderMapper;
 import com.shizuwei.dal.main.dao.UserMapper;
 import com.shizuwei.dal.main.po.Goods;
 import com.shizuwei.dal.main.po.Img;
+import com.shizuwei.dal.main.po.ImgInfo;
 import com.shizuwei.dal.main.po.Order;
 import com.shizuwei.dal.main.po.OrderGoods;
 import com.shizuwei.dal.main.po.User;
@@ -29,6 +34,7 @@ import com.shizuwei.service.dto.request.OrderListRequestDto;
 import com.shizuwei.service.dto.response.OrderInfoResponseDto;
 import com.shizuwei.service.main.OrderService;
 import com.shizuwei.utils.DebugUtils;
+import com.shizuwei.utils.PriceUtil;
 
 @Service("orderService")
 public class OrderServiceImpl implements OrderService {
@@ -68,12 +74,15 @@ public class OrderServiceImpl implements OrderService {
 		// 寻找order,一个用户一次folder只需一个order
 		List<Order> orders = this.orderMapper.getByFolder(orderAddRequest.getUserId(), img.getFolder());
 		Order order = null;
-
+		BigDecimal orderGoodsTotalPrice = PriceUtil.calOrderTotalPrice(goods, orderAddRequest.getGoodsCnt(),
+				user.getRatio());
+		logger.debug("addOrder orderGoodsTotalPrice = {} ", orderGoodsTotalPrice);
 		if (CollectionUtils.isEmpty(orders)) {
 			// 如果没有order，则直接生成一个order
 			order = new Order();
 			order.setOrderTime(new Date());
-			order.setOrderTotalPrice(goods.getGoodsPrice().multiply(new BigDecimal(orderAddRequest.getGoodsCnt())));
+
+			order.setOrderTotalPrice(orderGoodsTotalPrice);
 			order.setOrderFolder(img.getFolder());
 			order.setUserId(orderAddRequest.getUserId());
 			logger.debug("create new Order = {}", order);
@@ -83,8 +92,7 @@ public class OrderServiceImpl implements OrderService {
 			Preconditions.checkArgument(orders.size() == 1, "一个用户一次促销有且只能有一个订单!");
 			order = orders.get(0);
 			Preconditions.checkArgument(order.getUserId().equals(orderAddRequest.getUserId()), "userId not equal");
-			BigDecimal orderTotalPrice = order.getOrderTotalPrice()
-					.add(goods.getGoodsPrice().multiply(new BigDecimal(orderAddRequest.getGoodsCnt())));
+			BigDecimal orderTotalPrice = order.getOrderTotalPrice().add(orderGoodsTotalPrice);
 			order.setOrderTotalPrice(orderTotalPrice);
 			logger.debug("update Order = {}", order);
 			this.orderMapper.update(order);
@@ -97,7 +105,7 @@ public class OrderServiceImpl implements OrderService {
 		orderGoods.setGoodsId(orderAddRequest.getGoodsId());
 		orderGoods.setGoodsStatus(orderAddRequest.getGoodsStatus());
 		orderGoods.setOrderStatus(orderAddRequest.getOrderStatus());
-		orderGoods.setOrderGoodsPrice(goods.getGoodsPrice().multiply(new BigDecimal(orderAddRequest.getGoodsCnt())));
+		orderGoods.setOrderGoodsPrice(orderGoodsTotalPrice);
 		orderGoods.setOrderId(order.getOrderId());
 		orderGoods.setUserId(orderAddRequest.getUserId());
 		logger.debug("add orderGoods={}", orderGoods);
@@ -124,8 +132,13 @@ public class OrderServiceImpl implements OrderService {
 
 		Order toDelOrder = this.orderMapper.getById(orderGoods.getOrderId());
 		Preconditions.checkArgument(toDelOrder != null && toDelOrder.getOrderTotalPrice() != null);
-		if (toDelOrder.getOrderTotalPrice().compareTo(toDelOrderGoods.getOrderGoodsPrice()) <= 0) {
+		OrderGoods orderGoodsParam = new OrderGoods();
+		orderGoodsParam.setOrderId(toDelOrderGoods.getOrderId());
+		
+		List<OrderGoods> orderGoodsList = this.orderGoodsMapper.list(orderGoodsParam);
+		if (CollectionUtils.isEmpty(orderGoodsList)) {
 			this.orderMapper.delById(orderGoods.getOrderId());
+			Preconditions.checkArgument(toDelOrder.getOrderTotalPrice().compareTo(toDelOrderGoods.getOrderGoodsPrice()) <= 0, "金额错误，订单删完后，订单总额不能归0！");
 		} else {
 			BigDecimal price = toDelOrder.getOrderTotalPrice().subtract(toDelOrderGoods.getOrderGoodsPrice());
 			toDelOrder.setOrderTotalPrice(price);
@@ -173,7 +186,13 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public List<OrderInfoResponseDto> getOrders(OrderListRequestDto orderListRequestDto) {
-		return this.orderMapper.listOrders(orderListRequestDto);
+	public PageBean<OrderInfoResponseDto> getOrders(OrderListRequestDto orderListRequestDto) {
+
+		Integer pageNum = PaginationContext.getPageNum() == null ? 1 : PaginationContext.getPageNum();
+		Integer pageSize = PaginationContext.getPageSize();
+		logger.debug("pageNum={},pageSize={}", pageNum, pageSize);
+		PageHelper.startPage(pageNum, pageSize);
+		List<OrderInfoResponseDto> list = this.orderMapper.listOrders(orderListRequestDto);
+		return new PageBean<>(list);
 	}
 }

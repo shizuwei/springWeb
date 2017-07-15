@@ -6,6 +6,7 @@
 		<id property="userId" column="user_id" />
 		<result property="wxName" column="wx_name" />
 		<result property="accountNumber" column="account_number" />
+		<result property="ratio" column="ratio" />
 	</resultMap>
 
 	<select id="getById" parameterType="int" resultType="User">
@@ -41,8 +42,8 @@
 	<insert id="insert" useGeneratedKeys="true" keyProperty="userId"
 		parameterType="User">
 		insert into
-		user(wx_name,account_number)
-		values(#{wxName},#{accountNumber})
+		user(wx_name,account_number,ratio)
+		values(#{wxName},#{accountNumber},#{ratio})
 	</insert>
 
 	<delete id="delById" parameterType="int">
@@ -55,6 +56,7 @@
 		<set>
 			<if test="wxName != null">wx_name=#{wxName},</if>
 			<if test="accountNumber != null">account_number=#{accountNumber}</if>
+			<if test="ratio != null">ratio=#{ratio}</if>
 		</set>
 		where user_id=#{userId}
 	</update>

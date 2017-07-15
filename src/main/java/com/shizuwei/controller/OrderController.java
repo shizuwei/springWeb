@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.google.common.collect.Maps;
 import com.shizuwei.controller.common.AuthInfo;
 import com.shizuwei.controller.common.response.Response;
+import com.shizuwei.dal.common.page.PageBean;
 import com.shizuwei.dal.main.po.Order;
 import com.shizuwei.dal.main.po.OrderGoods;
 import com.shizuwei.service.dto.request.OrderAddRequest;
@@ -44,14 +45,14 @@ public class OrderController {
 	public @ResponseBody Response editOrderGoods(@RequestBody OrderGoods orderGoods) {
 		logger.debug("orderGoods = {}", orderGoods);
 		this.orderService.editOrderGoods(orderGoods);
-		return Response.done();
+		return Response.create();
 	}
 	
 	@RequestMapping(value = "order/delOrderGoods.do", method = { RequestMethod.POST, RequestMethod.GET })
 	public @ResponseBody Response delOrderGoods(@RequestBody OrderGoods orderGoods) {
 		logger.debug("orderGoods = {}", orderGoods);
 		this.orderService.delOrderGoods(orderGoods);
-		return Response.done();
+		return Response.create();
 	}
 	
 	@RequestMapping(value = "order/getOrders.do", method = { RequestMethod.POST, RequestMethod.GET })
@@ -60,7 +61,7 @@ public class OrderController {
 			orderListRequestDto.setUserId(AuthInfo.getUser().getUserId());
 		}
 		logger.debug("orderListRequestDto = {}", orderListRequestDto);
-		List<OrderInfoResponseDto> list = this.orderService.getOrders(orderListRequestDto);
-		return Response.data(list);
+		PageBean<OrderInfoResponseDto> page = this.orderService.getOrders(orderListRequestDto);
+		return Response.data(page.getList()).setPage(page);
 	}
 }

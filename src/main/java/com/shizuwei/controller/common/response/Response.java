@@ -3,6 +3,7 @@ package com.shizuwei.controller.common.response;
 import java.io.Serializable;
 
 import com.shizuwei.controller.common.dto.PageDto;
+import com.shizuwei.dal.common.page.PageBean;
 
 public class Response implements Serializable {
 	public static final int OK = 200, ERROR = -1;
@@ -17,7 +18,53 @@ public class Response implements Serializable {
 		status = OK;
 	}
 
-	public static Response done() {
+	public static class ResponseBuilder {
+		private Object data;
+		private String msg;
+		private PageDto pageDto;
+
+		public ResponseBuilder data(Object data) {
+			this.data = data;
+			return this;
+		}
+
+		public ResponseBuilder error(String msg) {
+			this.msg = msg;
+			return this;
+		}
+
+		public ResponseBuilder page(PageDto pageDto) {
+			this.pageDto = pageDto;
+			return this;
+		}
+
+		public ResponseBuilder setPage(PageBean<?> pageBean) {
+
+			PageDto pageDto = new PageDto();
+			pageDto.setCount(pageBean.getTotal());
+			pageDto.setCurPageCount(pageBean.getSize());
+			pageDto.setPageNum(pageBean.getPageNum());
+			pageDto.setPageSize(pageBean.getPageSize());
+			pageDto.setTotalPages(pageBean.getPages());
+			this.pageDto = pageDto;
+			return this;
+
+		}
+
+		public Response create() {
+			Response response = new Response();
+			response.setData(this.data);
+			response.setMsg(msg);
+			response.setPage(pageDto);
+			return response;
+		}
+	}
+
+	public static ResponseBuilder builder() {
+		return new ResponseBuilder();
+	}
+
+	public static Response create() {
 		return new Response();
 	}
 
@@ -89,4 +136,18 @@ public class Response implements Serializable {
 		return this;
 
 	}
+
+	public Response setPage(PageBean<?> pageBean) {
+
+		PageDto pageDto = new PageDto();
+		pageDto.setCount(pageBean.getTotal());
+		pageDto.setCurPageCount(pageBean.getSize());
+		pageDto.setPageNum(pageBean.getPageNum());
+		pageDto.setPageSize(pageBean.getPageSize());
+		pageDto.setTotalPages(pageBean.getPages());
+		this.pageDto = pageDto;
+		return this;
+
+	}
+
 }
