@@ -35,6 +35,7 @@ public class OrderController {
 		Order orderOf = this.orderService.addOrder(order);
 		Map<String, Object> data = Maps.newHashMap();
 		data.put("order", orderOf);
+		data.put("orderGoodsId", order.getOrderGoodsId());
 		return Response.data(data);
 	}
 	

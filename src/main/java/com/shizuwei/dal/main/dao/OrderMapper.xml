@@ -63,7 +63,7 @@
 	</update>
 	
 
-	<resultMap type="Order" id="orderInfoMap" extends="baseOrderMap">
+	<resultMap id="orderInfoMap" type="Order" extends="baseOrderMap">
 		<collection property="goodsList" resultMap="orderGoodsMap" />
 	</resultMap>
 	
@@ -135,13 +135,14 @@
 	</resultMap>
 
 
-	<resultMap  type="OrderGoodsResponseDto" id="orderGoodsResponseDtoMap" extends="com.shizuwei.dal.main.dao.OrderGoodsMapper.baseOrderGoodsMap">
+	<resultMap  type="OrderGoodsResponseDto" id="orderGoodsResponseDtoMap" extends="com.shizuwei.dal.main.dao.OrderMapper.orderGoodsMap">
 		<result property="imgURL" column="img_url" />
+		<result property="imgName" column="img_name" />
 	</resultMap>
 	
 	
 	<select id="listOrders" parameterType="OrderListRequestDto" resultMap="orderInfoResponseDtoMap">
-		SELECT o.*,img_url,og.goods_cnt,og.goods_status,og.order_goods_id,og.order_status,og.order_goods_price,goods.goods_freight,goods.goods_id,goods.goods_price FROM webdata.order o JOIN order_goods og ON og.order_id = o.order_id JOIN goods ON goods.goods_id = og.goods_id JOIN img ON img.img_id = goods.img_id
+		SELECT o.*,img_url,img_name,og.goods_cnt,og.goods_status,og.order_goods_id,og.order_status,og.order_goods_price,goods.goods_freight,goods.goods_id,goods.goods_price FROM webdata.order o JOIN order_goods og ON og.order_id = o.order_id JOIN goods ON goods.goods_id = og.goods_id JOIN img ON img.img_id = goods.img_id
 		<where>
 			<if test="userId != null">
 				AND o.user_id=#{userId}

@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.shizuwei.controller.common.constants.WebConstantsUtil;
 import com.shizuwei.controller.common.dto.PageDto;
 import com.shizuwei.controller.common.response.Response;
+import com.shizuwei.controller.dto.ImgEditDto;
 import com.shizuwei.dal.common.page.PageBean;
 import com.shizuwei.dal.main.po.ImgInfo;
 import com.shizuwei.service.dto.request.ImgListRequestDto;
@@ -61,9 +62,9 @@ public class ImgController {
 	@ResponseBody
 	public Response list(@RequestBody ImgListRequestDto imgListRequsetDto) {
 		logger.debug("imgListRequsetDto={}", imgListRequsetDto);
-		if (StringUtils.isBlank(imgListRequsetDto.getFolder())) {
-			return Response.error("folder不能为空！");
-		}
+		//if (StringUtils.isBlank(imgListRequsetDto.getFolder())) {
+		//	return Response.error("folder不能为空！");
+		//}
 		PageBean<ImgInfo> list = this.imgService.list(imgListRequsetDto);
 		PageDto pageDto = new PageDto();
 		pageDto.setCount(list.getTotal());
@@ -84,10 +85,11 @@ public class ImgController {
 	
 	@RequestMapping(value = "img/delete.do", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public Response delete(@RequestBody ImgInfo img) {
+	public Response delete(@RequestBody ImgEditDto img) {
 		logger.debug("img={}", img);
-		this.imgService.delete(img.getImgId());
-		return Response.done();
+		List<Integer> ids = img.getIds();
+		List<Integer> delIds = this.imgService.delete(ids);
+		return Response.data(delIds);
 	}
 
 	@RequestMapping(value = "img/{folder}/get.do", method = { RequestMethod.POST, RequestMethod.GET })

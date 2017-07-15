@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link href="./css/bootstrap.min.css" rel="stylesheet">
 <link href="./css/fileinput.min.css" rel="stylesheet">
 <link href="./css/orders.css" rel="stylesheet">
@@ -83,33 +84,35 @@
 				<tbody>
 					<tr class="row" ng-repeat="order in orders">
 						<td ng-if="order.span > 0" rowspan="{{order.span}}" class="col-md-2 col-2">
-							场次：<br>{{order.orderFolder}}<br>
-							金额：<br>{{order.orderTotalPrice}}
+							场次：<br>
+							<span class="label label-primary">{{order.orderFolder}}</span><br>
+							金额：<br>
+							<span class="label label-info">{{order.orderTotalPrice}}</span>
 						</td>
 						<td class="col-md-6 col-6"> 
-							<img src="{{order.imgURL}}"/>
+							<img ng-src="{{order.imgURL}}"/>
 							<div>
-								名称：{{order.goodsId}} <br>
-								序号：{{order.goodsId}} <br>
-								单价：{{order.orderGoodsPrice}}元
+								<span class="label label-primary">名称：{{order.imgName}}</span> <br>
+								<span class="label label-primary">序号：{{order.goodsId}}</span> <br>
+								<span class="label label-primary">单价：{{order.goods.goodsPrice}}元</span>
 							</div>
 						</td>
 						<td class="col-md-3 col-3">
-							数量：{{order.goodsCnt}}件 <br>
-							运费：10 <br>
-							汇率：0.75 <br>
-							总价：{{order.orderGoodsPrice}}元 
+							<span class="label label-default">数量：{{order.goodsCnt}}件</span> <br>
+							<span class="label label-default">运费：{{order.goods.goodsFreight}}元</span><br>
+							<span class="label label-default">汇率：0.75 </span><br>
+							<span class="label label-primary">总价：{{order.orderGoodsPrice}}元</span> 
 						</td>
 						<td class="col-md-1 col-1"> 
-							{{order.orderStatusStr}} <br>
-							{{order.goodsStatusStr}} 
+							<span class="label" ng-class="{true:'label-success',false:'label-warning'}[order.orderStatus == 1]">{{order.orderStatusStr}}</span>  <br>
+							<span class="label" ng-class="{true:'label-success',false:'label-warning'}[order.goodsStatus == 1]">{{order.goodsStatusStr}}</span>  
 						</td>
 					</tr>
 				</tbody>
 			</table>
 
 			<div>
-				<ul uib-pagination total-items="totalItems" ng-change="pageselect()" ng-model="currentPage" max-size="maxSize" first-text="第一页" previous-text="上一页" next-text="下一页" last-text="最后页" boundary-links="true" boundary-link-numbers="true" rotate="false"></ul>
+				<ul uib-pagination items-per-page="5" total-items="totalItems" ng-change="pageselect()" ng-model="currentPage" max-size="maxSize" first-text="第一页" previous-text="上一页" next-text="下一页" last-text="最后页" boundary-links="true" boundary-link-numbers="true" rotate="false"></ul>
 			</div>
 		</div>
 	</div>

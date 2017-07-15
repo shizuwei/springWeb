@@ -56,14 +56,10 @@
 						删除
 					</button>
 
-					<button type="button" class="btn btn-danger" ng-click="img.update()">
-						<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
-						刷新
-					</button>
-
 					<span class="titlebar" class="btn btn-success">
 						<label>文件夹：</label>
 						<select class="form-control" ng-model="folder" ng-change="folder" ng-options="f as f for f in folders">
+							<option value="">全部</option>
 						</select>
 					</span>
 
@@ -87,6 +83,11 @@
 							<option value="">全部</option>
 						</select>
 					</span>
+					
+					<button type="button" class="btn btn-danger" ng-click="img.update()">
+						<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+						刷新
+					</button>
 
 					<button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#importImg" ng-click="user.logout()">
 						<span class="glyphicon glyphicon-user" aria-hidden="true"></span>
@@ -96,7 +97,7 @@
 				<thead>
 					<tr class="row">
 						<th class="col-md-1 col-1  text-center">ID</th>
-						<th class="col-md-1 col-1  text-center">选择</th>
+						<th class="col-md-1 col-1  text-center">选择<input name="checkbox" type="checkbox" ng-checked="img.checkedAll" ng-click = "img.allCheckClick()"></th>
 						<th class="col-md-3 col-3  text-center">图片</th>
 						<th class="col-md-1 col-1  text-center">名称</th>
 						<th class="col-md-6 col-6  text-center">信息</th>
@@ -109,7 +110,7 @@
 							<input name="checkbox" type="checkbox" ng-checked="img.checked">
 						</td>
 						<td class="col-md-3 col-3">
-							<img ng-src="{{img.imgUrl}}" class="img-rounded">
+							<img ng-src="{{img.imgUrl}}" onmouseover="onimgmouseover(this)"  onmouseleave="onimgmouseleave(this)" class="img-rounded">
 						</td>
 						<td class="col-md-1 col-1">{{img.imgName}}</td>
 						<td class="col-md-6 col-6 no-padding">
@@ -145,7 +146,7 @@
 				</tbody>
 			</table>
 			<div>
-				<ul uib-pagination total-items="totalItems" ng-change="pageselect()" ng-model="currentPage" max-size="maxSize" first-text="第一页" previous-text="上一页" next-text="下一页" last-text="最后页" boundary-links="true" boundary-link-numbers="true"  rotate="false"></ul>
+				<ul uib-pagination total-items="totalItems" ng-change="pageselect()" items-per-page="5" ng-model="currentPage" max-size="maxSize" first-text="第一页" previous-text="上一页" next-text="下一页" last-text="最后页" boundary-links="true" boundary-link-numbers="true"  rotate="false"></ul>
 			</div>
 		</div>
 
@@ -174,7 +175,7 @@
 						</form>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal"  ng-cilck="updateAll()">关闭</button>
 						<button type="submit" name="submit" class="btn btn-primary" ng-click="img.upload()">导入图片</button>
 					</div>
 				</div>
@@ -204,6 +205,8 @@
 							<input type="text" class="form-control" placeholder="输入商品尺寸" ng-model="gg.size">
 							<span class="input-group-addon">价格</span>
 							<input type="text" class="form-control" placeholder="输入商品价格" ng-model="gg.goodsPrice">
+							<span class="input-group-addon">运费</span>
+							<input type="text" class="form-control" placeholder="添加商品运费" ng-model="gg.goodsFreight">
 							<span class="input-group-addon  btn btn-primary" aria-hidden="true">
 								<span ng-click='good.editInfo(gg,$event)' class="glyphicon glyphicon-refresh"></span>
 							</span>
@@ -214,11 +217,13 @@
 							<input type="text" class="form-control" placeholder="添加商品尺寸" ng-model="img.cur.inputSize">
 							<span class="input-group-addon">价格</span>
 							<input type="text" class="form-control" placeholder="添加商品价格" ng-model="img.cur.inputPrice">
+							<span class="input-group-addon">运费</span>
+							<input type="text" class="form-control" placeholder="添加商品运费" ng-model="img.cur.inputFreight">
 							<span class="input-group-addon glyphicon glyphicon-plus btn btn-primary " aria-hidden="true" ng-click='img.addGood()'></span>
 						</div>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal" ng-cilck="updateAll()">关闭</button>
 					</div>
 				</div>
 				<!-- /.modal-content -->

@@ -28,6 +28,7 @@ import com.shizuwei.service.dto.request.OrderAddRequest;
 import com.shizuwei.service.dto.request.OrderListRequestDto;
 import com.shizuwei.service.dto.response.OrderInfoResponseDto;
 import com.shizuwei.service.main.OrderService;
+import com.shizuwei.utils.DebugUtils;
 
 @Service("orderService")
 public class OrderServiceImpl implements OrderService {
@@ -46,49 +47,52 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public Order addOrder(OrderAddRequest orderAddRequest) {
-		Preconditions.checkNotNull(orderAddRequest.getGoodsCnt());
-		Preconditions.checkNotNull(orderAddRequest.getOrderStatus());
-		Preconditions.checkNotNull(orderAddRequest.getGoodsStatus());
-		Preconditions.checkNotNull(orderAddRequest.getGoodsId());
-		Preconditions.checkNotNull(orderAddRequest.getUserId());
+		DebugUtils.transactionRequired("check trasaction.");
+		Preconditions.checkNotNull(orderAddRequest.getGoodsCnt(), "必须填写商品数量！");
+		Preconditions.checkNotNull(orderAddRequest.getOrderStatus(), "必须填写订单状态！");
+		Preconditions.checkNotNull(orderAddRequest.getGoodsStatus(), "必须填写商品状态！");
+		Preconditions.checkNotNull(orderAddRequest.getGoodsId(), "必须填写商品ID！");
+		Preconditions.checkNotNull(orderAddRequest.getUserId(), "必须填写用户ID！");
 		User user = this.userMapper.getById(orderAddRequest.getUserId());
-		Preconditions.checkNotNull(user);
+		Preconditions.checkNotNull(user, "用户不存在！");
 		Goods goods = this.goodsMapper.getById(orderAddRequest.getGoodsId());
-		Preconditions.checkNotNull(goods);
+		Preconditions.checkNotNull(goods, "商品不存在!");
 		BigDecimal goodsPrice = goods.getGoodsPrice();
-		Preconditions.checkNotNull(goodsPrice);
-		Preconditions.checkNotNull(goods.getImgId());
+		Preconditions.checkNotNull(goodsPrice, "商品价格为空！");
+		Preconditions.checkNotNull(goods.getImgId(), "商品图片ID为空！");
 
 		Img img = this.imgMapper.getById(goods.getImgId());
-		Preconditions.checkNotNull(img);
-		Preconditions.checkNotNull(img.getFolder());
+		Preconditions.checkNotNull(img, "商品图片不存在！");
+		Preconditions.checkNotNull(img.getFolder(), "商品图片FOLDER错误！");
 
-		/** 寻找order,一个用户一次folder只需一个order **/
+		// 寻找order,一个用户一次folder只需一个order
 		List<Order> orders = this.orderMapper.getByFolder(orderAddRequest.getUserId(), img.getFolder());
 		Order order = null;
 
-		// 如果没有order，则直接生成一个order
 		if (CollectionUtils.isEmpty(orders)) {
+			// 如果没有order，则直接生成一个order
 			order = new Order();
 			order.setOrderTime(new Date());
 			order.setOrderTotalPrice(goods.getGoodsPrice().multiply(new BigDecimal(orderAddRequest.getGoodsCnt())));
 			order.setOrderFolder(img.getFolder());
 			order.setUserId(orderAddRequest.getUserId());
-			logger.debug("add Order = {}", order);
+			logger.debug("create new Order = {}", order);
 			this.orderMapper.insert(order);
 		} else {
-			Preconditions.checkArgument(orders.size() == 1, "一个用户一次促销只能有一个订单");
+			// 已有一个Order
+			Preconditions.checkArgument(orders.size() == 1, "一个用户一次促销有且只能有一个订单!");
 			order = orders.get(0);
 			Preconditions.checkArgument(order.getUserId().equals(orderAddRequest.getUserId()), "userId not equal");
 			BigDecimal orderTotalPrice = order.getOrderTotalPrice()
 					.add(goods.getGoodsPrice().multiply(new BigDecimal(orderAddRequest.getGoodsCnt())));
 			order.setOrderTotalPrice(orderTotalPrice);
-			logger.debug("update Order={}", order);
+			logger.debug("update Order = {}", order);
 			this.orderMapper.update(order);
 		}
 
 		// orderGoods加入
 		OrderGoods orderGoods = new OrderGoods();
+		orderGoods.setOrderGoodsId(orderAddRequest.getOrderGoodsId());
 		orderGoods.setGoodsCnt(orderAddRequest.getGoodsCnt());
 		orderGoods.setGoodsId(orderAddRequest.getGoodsId());
 		orderGoods.setGoodsStatus(orderAddRequest.getGoodsStatus());
@@ -98,12 +102,16 @@ public class OrderServiceImpl implements OrderService {
 		orderGoods.setUserId(orderAddRequest.getUserId());
 		logger.debug("add orderGoods={}", orderGoods);
 		this.orderGoodsMapper.insert(orderGoods);
+
+		orderAddRequest.setOrderGoodsId(orderGoods.getOrderGoodsId());
+
 		return order;
 	}
 
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public void delOrderGoods(OrderGoods orderGoods) {
+		DebugUtils.transactionRequired("check trasaction.");
 		Preconditions.checkNotNull(orderGoods.getOrderGoodsId());
 		Preconditions.checkNotNull(orderGoods.getGoodsId());
 		Preconditions.checkNotNull(orderGoods.getOrderId());
@@ -129,6 +137,7 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public void editOrderGoods(OrderGoods orderGoods) {
+		DebugUtils.transactionRequired("check trasaction.");
 		Preconditions.checkNotNull(orderGoods.getOrderGoodsId());
 		Preconditions.checkNotNull(orderGoods.getGoodsId());
 		Preconditions.checkNotNull(orderGoods.getOrderId());
@@ -158,6 +167,7 @@ public class OrderServiceImpl implements OrderService {
 			orderAddRequest.setOrderStatus(orderGoods.getOrderStatus() == null ? toEditOrderGoods.getOrderStatus()
 					: orderGoods.getOrderStatus());
 			orderAddRequest.setUserId(orderGoods.getUserId());
+			orderAddRequest.setOrderGoodsId(toEditOrderGoods.getOrderGoodsId());
 			this.addOrder(orderAddRequest);
 		}
 	}

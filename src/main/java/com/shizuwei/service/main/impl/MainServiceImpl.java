@@ -21,7 +21,7 @@ import com.shizuwei.dal.main.po.OrderInfo;
 import com.shizuwei.dal.main.po.User;
 import com.shizuwei.service.dto.request.OrderListRequestDto;
 import com.shizuwei.service.main.MainService;
-
+import com.shizuwei.utils.DebugUtils;
 @Service("mainService")
 public class MainServiceImpl implements MainService {
 
@@ -35,7 +35,7 @@ public class MainServiceImpl implements MainService {
 	@Override
 	@Transactional(readOnly = true, propagation = Propagation.REQUIRED)
 	public PageBean<OrderInfo> listOrder(OrderInfoListRequestDto infoRequst) {
-
+		DebugUtils.transactionRequired("check trasaction.");
 		OrderListRequestDto order = new OrderListRequestDto();
 		if (infoRequst != null) {
 			order.setOrderStatus(infoRequst.getPayStatus());

@@ -15,5 +15,5 @@ public class Goods {
 	private String size;
 	private Date updateTime;
 	private String brandName;
-	private Long goodsFreight;
+	private BigDecimal goodsFreight;
 }

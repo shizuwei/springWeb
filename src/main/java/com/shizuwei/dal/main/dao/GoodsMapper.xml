@@ -27,6 +27,10 @@
         </foreach>
 	</select>
 	
+	<select id="getGoodsCountOfImg" parameterType="int" resultType="int">
+		select count(*) from goods where img_id = #{imgId}
+	</select>
+	
 	<select id="list" parameterType="Goods" resultMap="baseGoodsMap">
 		select * from goods
 		<where>
@@ -47,9 +51,6 @@
 			</if>
 			<if test="goodsFreight != null">
 				and goods_freight = #{goodsFreight}
-			</if>
-			<if test="goodsStatus != null">
-				and goods_status = #{goodsStatus}
 			</if>
 			<if test="brandName != null">
 				and brand_name like '%#{brandName}%'
@@ -74,11 +75,11 @@
 	
 	<insert id="batchInsert" useGeneratedKeys="true" keyProperty="goodsId" parameterType="list">
 		insert into
-		goods(goods_name,goods_price,img_id,goods_number,goods_size,goods_freight,brand_name,goods_status)
+		goods(goods_name,goods_price,img_id,goods_number,goods_size,goods_freight,brand_name)
 		values
 		<foreach collection="list" item="item" index="index"
              separator=",">
-             (#{item.goodsName},#{item.goodsPrice},#{item.imgId},#{item.goodsNumber},#{item.size},#{item.goodsFreight},#{item.goodsName},#{item.goodsStatus})
+             (#{item.goodsName},#{item.goodsPrice},#{item.imgId},#{item.goodsNumber},#{item.size},#{item.goodsFreight},#{item.goodsName})
      	</foreach>	
 	</insert>
 	
@@ -103,7 +104,6 @@
 			<if test="goodsPrice != null">goods_price=#{goodsPrice},</if>
 			<if test="imgId != null">img_id=#{imgId},</if>
 			<if test="goodsNumber != null">goods_number=#{goodsNumber},</if>
-			<if test="goodsStatus != null">goods_status=#{goodsStatus},</if>
 			<if test="size != null">goods_size=#{size},</if>
 			<if test="goodsFreight != null">goods_freight=#{goodsFreight},</if>
 			<if test="brandName != null">brand_name=#{brandName}</if>

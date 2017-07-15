@@ -11,4 +11,5 @@ public class Img {
 	private String imgUrl;
 	private Date updateTime;
 	private String folder;
+	private String fileName;
 }

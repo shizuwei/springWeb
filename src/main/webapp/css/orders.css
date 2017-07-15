@@ -7,6 +7,12 @@ td>img, td > div{
 	display:inline-block;
 }
 
+caption > button:not(.pull-right){
+	display:inline-block;
+	position:relative;
+	top:-2px;
+}
+
 .titlebar{
 	margin:0;
 	padding:0px;
@@ -31,4 +37,10 @@ td>img, td > div{
 
 .hide{
 	display: none;
+}
+
+span.label{
+	margin:3px;
+	padding:6px;
+	display:inline-block;
 }

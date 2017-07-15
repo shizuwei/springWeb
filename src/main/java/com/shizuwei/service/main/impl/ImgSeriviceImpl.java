@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,10 @@ import com.google.common.collect.Lists;
 import com.shizuwei.controller.common.constants.WebConstantsUtil;
 import com.shizuwei.dal.common.page.PageBean;
 import com.shizuwei.dal.common.page.PaginationContext;
+import com.shizuwei.dal.main.dao.GoodsMapper;
 import com.shizuwei.dal.main.dao.ImgMapper;
+import com.shizuwei.dal.main.dao.OrderGoodsMapper;
+import com.shizuwei.dal.main.dao.OrderMapper;
 import com.shizuwei.dal.main.po.Img;
 import com.shizuwei.dal.main.po.ImgInfo;
 import com.shizuwei.service.dto.request.ImgListRequestDto;
@@ -32,6 +36,12 @@ public class ImgSeriviceImpl implements ImgService {
 	private static final Logger logger = LoggerFactory.getLogger(ImgSeriviceImpl.class);
 	@Resource
 	private ImgMapper imgMapper;
+	@Resource
+	private GoodsMapper goodsMapper;
+	@Resource
+	private OrderGoodsMapper orderGoodsMapper;
+	@Resource
+	private OrderMapper orderMapper;
 
 	@Override
 	public List<String> getFolders() {
@@ -75,6 +85,7 @@ public class ImgSeriviceImpl implements ImgService {
 		img.setImgUrl("./img/" + folder + "/get.do?file=" + fileName);
 		img.setFolder(folder);
 		img.setImgName(fileName);
+		img.setFileName(fileName);
 		imgMapper.insert(img);
 
 		return destFilePath;
@@ -95,6 +106,10 @@ public class ImgSeriviceImpl implements ImgService {
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public void delete(Integer id) {
+		Preconditions.checkNotNull(id);
+		// 查看是否被goods引用
+		Integer countOfImg = this.goodsMapper.getGoodsCountOfImg(id);
+		Preconditions.checkArgument(countOfImg != null && countOfImg.equals(0), "图片已经被引用，不能删除！");
 		this.imgMapper.delById(id);
 	}
 
@@ -103,5 +118,29 @@ public class ImgSeriviceImpl implements ImgService {
 	public void update(Img img) {
 
 		this.imgMapper.update(img);
+	}
+
+	@Override
+	public List<Integer> delete(List<Integer> ids) {
+		List<Integer> delIds = Lists.newArrayList();
+		if (CollectionUtils.isNotEmpty(ids)) {
+			for (Integer id : ids) {
+				Integer countOfImg = this.goodsMapper.getGoodsCountOfImg(id);
+				if (countOfImg != null && countOfImg.equals(0)) {
+					delIds.add(id);
+					Img img = this.imgMapper.getById(id);
+					if (img != null) {
+						this.imgMapper.delById(id);
+						File path = new File(
+								WebConstantsUtil.getDestFilePath() + img.getFolder() + "/" + img.getFileName());
+						if (path.exists()) {
+							path.delete();
+						}
+					}
+
+				}
+			}
+		}
+		return delIds;
 	}
 }

@@ -13,10 +13,10 @@
 		<result property="orderGoodsPriceDescription" column="order_goods_description" />
 	</resultMap>
 
-	<insert id="insert" parameterType="OrderGoods">
+	<insert id="insert" useGeneratedKeys="true" keyProperty="orderGoodsId" parameterType="OrderGoods">
 		insert into
-		order_goods(user_id,order_id,goods_id,goods_cnt,order_goods_price,order_goods_description,goods_status,order_status)
-		values(#{userId},#{orderId},#{goodsId},#{goodsCnt},#{orderGoodsPrice},#{orderGoodsDescription},#{goodsStatus},#{orderStatus})
+		order_goods(order_goods_id,user_id,order_id,goods_id,goods_cnt,order_goods_price,order_goods_description,goods_status,order_status)
+		values(#{orderGoodsId},#{userId},#{orderId},#{goodsId},#{goodsCnt},#{orderGoodsPrice},#{orderGoodsDescription},#{goodsStatus},#{orderStatus})
 	</insert>
 
 	<select id="list" parameterType="OrderGoods" resultMap="baseOrderGoodsMap">

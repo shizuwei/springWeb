@@ -17,13 +17,15 @@ app.controller('myController', function($scope, $http, switchSerivce, imgService
 	];
 	
 	function updateAll(){
-		
 		imgService.update($scope);
+		console.log("updateAll");
+		updateCheckStatus($scope);
 	}
 
 	function init(){
 		
 		$scope.today = new Date().format("yyyy-MM-dd");
+		$scope.curGoodCnt = 1;
 		
 		$http({
 			 method:'POST', 
@@ -93,7 +95,7 @@ app.controller('myController', function($scope, $http, switchSerivce, imgService
 	$scope.pageselect = function(){
 		
 		  console.log("pageNo="+ $scope.currentPage);
-          imgService.update($scope);
+          updateAll();
 	}
 	
 	$scope.user.logout = function(){
@@ -150,7 +152,7 @@ app.controller('myController', function($scope, $http, switchSerivce, imgService
 
     	console.log("input:"+$scope.img.cur.price+$scope.img.cur.size);
     	var cur = $scope.img.cur;
-    	var obj = {imgId:cur.imgId,size:cur.inputSize,goodsPrice:cur.inputPrice,goodsName:cur.imgName};
+    	var obj = {imgId:cur.imgId,size:cur.inputSize,goodsPrice:cur.inputPrice,goodsName:cur.imgName,goodsFreight:cur.inputFreight};
     	
     	var idx = getGoodsIndex(cur.goods, obj);
     	if(idx >= 0)
@@ -170,7 +172,7 @@ app.controller('myController', function($scope, $http, switchSerivce, imgService
     	    	if(response.status == 200)
             	{
                 	var data = response.data;
-                	var newObj = {id: data.id, goodsName: obj.goodsName, goodsPrice: obj.goodsPrice, imgId: obj.imgId, size: obj.size};
+                	var newObj = {goodsFreight:obj.goodsFreight, goodsId: data.id, goodsName: obj.goodsName, goodsPrice: obj.goodsPrice, imgId: obj.imgId, size: obj.size};
                 	cur.goods.push(newObj);
         			
         			// $(event.target).toggleClass("spin");
@@ -203,12 +205,9 @@ app.controller('myController', function($scope, $http, switchSerivce, imgService
     	 imgService.update($scope);
     	
     }
-    $scope.img.update();
     
     $scope.img.import = function() {
     	console.log("start import img..");
-    	  
-    	console.log("import img..");
     }
 
     $scope.img.upload = function() {
@@ -221,6 +220,7 @@ app.controller('myController', function($scope, $http, switchSerivce, imgService
 
 	$scope.img.delete = function(){
 		imgService.delete($scope);
+		updateAll();
 	}
 	
 
@@ -232,6 +232,8 @@ app.controller('myController', function($scope, $http, switchSerivce, imgService
 	$scope.img.submitEdit = function(){
 		console.log('submitEdit');
 	}
+	
+	$scope.updateAll = updateAll;
 
 /*
  * 添加订单信息： 包括：用户，多少件，订单状态。
@@ -304,8 +306,9 @@ app.controller('myController', function($scope, $http, switchSerivce, imgService
 				console.log(JSON.stringify(response));	
 				if(response.status == 200)
 				{	
+					order.orderGoodsId = response.data.orderGoodsId;
 					var hasOrder = false;
-					if(curGood.orders != null || curGood.orders.length == 0){
+					if( curGood.orders && curGood.orders.length > 0){
 						for(var i = 0; i < curGood.orders.length; i++ ){
 							var o = curGood.orders[i];
 							if(o.userId == curUserId){
@@ -315,6 +318,9 @@ app.controller('myController', function($scope, $http, switchSerivce, imgService
 					}
 					if(!hasOrder){
 						response.data.order.orderGoods=[order];
+						if(!curGood.orders){
+							curGood.orders = [];
+						}
 						curGood.orders.push(response.data.order);
 					}
 					console.log("..ok!")
@@ -358,28 +364,53 @@ app.controller('myController', function($scope, $http, switchSerivce, imgService
 	
 	$scope.order.delOrder = function(orderGoods,event){
 		var curImg = $scope.img.cur;
-		var curGood = $scope.good.cur;
-		$(event.target).toggleClass("spin");
+		var curGoods = $scope.good.cur;
 		$http({
 			 method:'POST', 
 			 url:'order/delOrderGoods.do', 
 			 data: orderGoods  
 		}).success(function(response){
 				console.log(JSON.stringify(response));	
-				if(response.status == 200)
+				if (response.status == 200)
 				{
-					$(event.target).toggleClass("spin");
-					updateAll();
+					var i = curGoods.orders.getIndexByAttr("orderId",orderGoods.orderId);
+					curOrder = curGoods.orders[i];
+					
+					if (curOrder)
+					{
+						if (curOrder.orderGoods)
+						{
+							curOrder.orderGoods.removeByAttr("orderGoodsId",[orderGoods]);
+							if (curOrder.orderGoods == null || curOrder.orderGoods.length < 1)
+							{
+								// 删除order
+								curGoods.orders.removeByAttr("orderId", [curOrder]);
+							}
+						}
+					}
 					console.log("..ok!")
-				}else{
+				}
+				else
+				{
 					console.log("..fail!")
 				}
 		});
-		
 	}
-
+	
+	$scope.img.allCheckClick = function(){
+		var allChecked = !$scope.img.checkedAll;
+		$scope.img.checkedAll = allChecked;
+		updateCheckStatus($scope);
+	}
 });
 
+
+function updateCheckStatus($scope)
+{
+	for( var i in $scope.imgs){
+		$scope.imgs[i].checked = $scope.img.checkedAll;
+	}	
+}
 
 app.service('switchSerivce', function() {
     this.switchTo = function (i, navs) {
@@ -405,9 +436,10 @@ app.service('imgService', function($http) {
 		})
 		.success(function(data,status,headers,config){
 			$scope.imgs = data.data;
-			if(data.pageDto){
-				$scope.totalItems = data.pageDto.count;
+			if(data.page){
+				$scope.totalItems = data.page.count + 1;
 			}
+			updateCheckStatus($scope);
 			console.log(JSON.stringify(data));
 		});
 	}
@@ -416,17 +448,23 @@ app.service('imgService', function($http) {
 		$('#imgFileInput').fileinput("upload");
 	}
 
-    this.delete = function($socpe) {
-    	for(var i = 0; i < $socpe.imgs.length; i++){
-    		var img = $socpe.imgs[i];
+    this.delete = function($scope) {
+    	var deltedImgs = [];
+    	for(var i = 0; i < $scope.imgs.length; i++){
+    		var img = $scope.imgs[i];
     		if (img.checked) {
-    			console.log("checked = " + img.url);
-    			$http({url:"./img/delete.do",params:{id:img.id}}).success(function(data,status,headers,config){
-    				$scope.imgs = data.data;
-    				console.log(JSON.stringify(data));
-    			});
+    			deltedImgs.push(img.imgId);
     		}
     	}
+		console.log("checked = " + img.url);
+		$http({url:"./img/delete.do", method:'POST', data:{ids:deltedImgs}}).success(function(data,status,headers,config){
+			if(data.status == 200){
+				delIds = data.data;
+				$scope.imgs.removeByAttr("imgId", delIds);
+				$scope.totalItems = $scope.totalItems - delIds.length;
+				console.log("del img " + JSON.stringify(delIds) + "ok!");
+			}
+		});
     	/* 可以调用批量删除接口, 然后update */
     }
 
@@ -487,3 +525,59 @@ $(document).ready(function(){
     	 console.log(data.response);  
     });
 });
+
+
+Array.prototype.removeByAttr = function(attr, attrValues) { 
+	
+	if(!attrValues || !(attrValues instanceof Array) || attrValues.length <= 0){
+		return;
+	}
+	
+	if(!attr){
+		return;
+	}
+	
+	var _attrValues = [];
+	if(attrValues[0][attr]){
+		for(var i = 0; i < attrValues.length; i++)
+		{
+			_attrValues.push(attrValues[i][attr]);
+		}
+		attrValues = _attrValues;
+	}
+	
+	for(var i = 0; i < this.length; ){
+		if(attrValues.indexOf(this[i][attr]) != -1){
+			this.splice(i,1);
+		}else{
+			i++;
+		}
+	}
+}; 
+
+Array.prototype.getIndexByAttr = function(attr, attrValue) { 
+	for(var i = 0; i < this.length; ){
+		if(this[i][attr] == attrValue){
+			return i;
+		}
+	}
+	return -1;
+}; 
+
+Array.prototype.getElementByAttr = function(attr, attrValue) { 
+	for(var i = 0; i < this.length; ){
+		if(this[i][attr] == attrValue){
+			return this[i];
+		}
+	}
+	return null;
+}; 
+
+
+function onimgmouseover (target){
+	//$("img").css({border:"solid 2px black"});
+}
+
+function onimgmouseleave (target){
+	//$("img").css({border:"solid 1px red"});
+}

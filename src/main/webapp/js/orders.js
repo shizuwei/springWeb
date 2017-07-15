@@ -80,6 +80,14 @@ app.controller('myController', function($scope, $http) {
 
 	}
 	
+	$scope.img.allCheckClick = function(){
+		var allChecked = !$scope.img.checkedAll;
+		$scope.img.checkedAll = allChecked;
+		for(var img in imgs){
+			img.checked = allChecked;
+		}	
+	}
+	
 	$scope.search = function(){
 		console.log("start search ... ");
 		$http({

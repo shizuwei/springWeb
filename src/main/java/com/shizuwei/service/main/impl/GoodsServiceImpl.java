@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -14,13 +13,13 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Sets;
 import com.shizuwei.dal.main.dao.GoodsMapper;
 import com.shizuwei.dal.main.dao.OrderGoodsMapper;
 import com.shizuwei.dal.main.dao.OrderMapper;
 import com.shizuwei.dal.main.po.Goods;
 import com.shizuwei.dal.main.po.OrderGoods;
 import com.shizuwei.service.main.GoodsService;
+import com.shizuwei.utils.DebugUtils;
 
 @Service
 @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
@@ -80,32 +79,57 @@ public class GoodsServiceImpl implements GoodsService {
 		this.goodsMapper.delById(id);
 	}
 
+	private static boolean isGoodsPriceChanged(Goods newer, Goods old) {
+		return newer.getGoodsPrice() != null && !newer.getGoodsPrice().equals(old.getGoodsPrice());
+	}
+
+	private static boolean isGoodsFreightChanged(Goods newer, Goods old) {
+		return newer.getGoodsFreight() != null && !newer.getGoodsFreight().equals(old.getGoodsFreight());
+	}
+
 	@Override
 	public void edit(Goods goods) {
+		DebugUtils.transactionRequired("check trasaction.");
 		Preconditions.checkNotNull(goods.getGoodsId());
+
 		Goods oldGoods = this.goodsMapper.getById(goods.getGoodsId());
+
 		Preconditions.checkNotNull(oldGoods, "编辑的产品 id=%d不存在！", goods.getGoodsId());
-		if (goods.getGoodsPrice() != null && !goods.getGoodsPrice().equals(oldGoods.getGoodsPrice())) {
+
+		// 先更新，以免会用到
+		this.goodsMapper.update(goods);
+
+		if (isGoodsPriceChanged(goods, oldGoods)) {
 			// 如果修改的产品的价格，则需要重新计算订单价格
 			OrderGoods orderGoodsQuery = new OrderGoods();
 			orderGoodsQuery.setGoodsId(goods.getGoodsId());
+			// 查找产品对应所有的OrderGoods
 			List<OrderGoods> orderGoodsList = this.orderGoodsMapper.list(orderGoodsQuery);
-			Set<Integer> orderIds = Sets.newHashSet();
+
 			if (CollectionUtils.isNotEmpty(orderGoodsList)) {
 				// 如果有关联订单, 则全部更新
 				for (OrderGoods og : orderGoodsList) {
-					BigDecimal orderGoodsPrice = BigDecimal.valueOf(og.getGoodsCnt()).multiply(goods.getGoodsPrice());
+					// 从新计算单个产品的价格
+					// 如果运费变了直接用新的运费计算
+					BigDecimal freight = null;
+					if (isGoodsFreightChanged(goods, oldGoods)) {
+						freight = goods.getGoodsFreight();
+					}
+					// cnt * (goodsPrice + freight) ?? 还有汇率？？
+					BigDecimal orderGoodsPrice = BigDecimal.valueOf(og.getGoodsCnt())
+							.multiply((goods.getGoodsPrice().add(freight)));
 					og.setOrderGoodsPrice(orderGoodsPrice);
+					// 更新orderGoodsPrice
 					this.orderGoodsMapper.update(og);
-					orderIds.add(og.getOrderId());
+					// 更新对应的Order
+					this.orderMapper.updateOrderTotalPriceById(og.getOrderId());
 				}
 			}
 
-			if (CollectionUtils.isNotEmpty(orderIds)) {
-				orderIds.forEach(id -> {
-					this.orderMapper.updateOrderTotalPriceById(id);
-				});
-			}
+			/*
+			 * if (CollectionUtils.isNotEmpty(orderIds)) { orderIds.forEach(id
+			 * -> { this.orderMapper.updateOrderTotalPriceById(id); }); }
+			 */
 
 			// Map<Integer, BigDecimal> orderIdsPriceMap = Maps.newHashMap();
 
@@ -116,7 +140,6 @@ public class GoodsServiceImpl implements GoodsService {
 			 * this.orderMapper.update(order); });
 			 */
 		}
-		this.goodsMapper.update(goods);
 
 	}
 

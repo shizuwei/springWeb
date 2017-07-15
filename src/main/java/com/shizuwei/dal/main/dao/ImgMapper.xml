@@ -45,8 +45,8 @@
 	<insert id="insert" useGeneratedKeys="true" keyProperty="imgId" parameterType="Img">
 		insert into
 		img(img_name,
-		img_url,folder)
-		values(#{imgName,jdbcType=VARCHAR},#{imgUrl,jdbcType=VARCHAR},#{folder,jdbcType=VARCHAR})
+		img_url,folder,file_name)
+		values(#{imgName,jdbcType=VARCHAR},#{imgUrl,jdbcType=VARCHAR},#{folder,jdbcType=VARCHAR},#{fileName,jdbcType=VARCHAR})
 	</insert>
 	
 	<delete id="delById" parameterType="int">

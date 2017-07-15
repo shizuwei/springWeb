@@ -9,4 +9,5 @@ public class OrderAddRequest {
 	private Integer goodsCnt;
 	private Integer goodsStatus;
 	private Integer orderStatus;
+	private Integer orderGoodsId;
 }

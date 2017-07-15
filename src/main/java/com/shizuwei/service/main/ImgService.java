@@ -17,6 +17,8 @@ public interface ImgService {
 	PageBean<ImgInfo> list(ImgListRequestDto imgListRequsetDto);
 
 	void delete(Integer id);
+	
+	List<Integer>  delete(List<Integer> ids);
 
 	void update(Img img);
 
