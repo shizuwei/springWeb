@@ -124,7 +124,7 @@ app.controller('myController', function($scope, $http, switchSerivce, imgService
     $scope.img.edit = function() {
 
     	 var editImgs = imgService.getCheckedImgs($scope);
-
+    	 
     	 if(editImgs.length > 1){
     	 	alert("一次只能编辑一个");
     	 	return;
@@ -132,7 +132,7 @@ app.controller('myController', function($scope, $http, switchSerivce, imgService
 
     	 if (editImgs.length == 1) {
     	 	$scope.img.cur = editImgs[0];
-    	 	
+    	 	$scope.orderStatus = -1;
     	 	$("#editImg").modal({keyboard: true})
     	 }
     }

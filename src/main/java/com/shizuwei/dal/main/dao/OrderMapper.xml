@@ -26,13 +26,15 @@
 			#{id}
 		</foreach>
 	</select>
-	
+
 	<select id="getByFolder" parameterType="hashmap" resultMap="baseOrderMap">
 		select *
-		from webdata.order where order_folder = #{folder} and user_id = #{userId}
+		from webdata.order where order_folder = #{folder} and user_id
+		= #{userId}
 	</select>
 
-	<insert id="insert" useGeneratedKeys="true" keyProperty="orderId" parameterType="Order">
+	<insert id="insert" useGeneratedKeys="true" keyProperty="orderId"
+		parameterType="Order">
 		insert into
 		webdata.order(user_id,order_pay_time,order_time,order_total_price,order_description,order_folder)
 		values(#{userId},#{orderPayTime},#{orderTime},#{orderTotalPrice},#{orderDescription},#{orderFolder})
@@ -53,22 +55,28 @@
 	</update>
 
 	<delete id="delById" parameterType="int">
-		delete from webdata.order where
+		delete from webdata.order
+		where
 		order_id=#{orderId}
 	</delete>
-	
-	
+
+
 	<update id="updateOrderTotalPriceById" parameterType="int">
-		update webdata.order o, (SELECT sum(order_goods_price) as total, order_id from order_goods group by order_id) og set o.order_total_price = og.total where og.order_id = o.order_id and o.order_id = #{id};
+		update
+		webdata.order o, (SELECT sum(order_goods_price) as total, order_id
+		from order_goods group by order_id) og set o.order_total_price =
+		og.total where og.order_id = o.order_id and o.order_id = #{id};
 	</update>
-	
+
 
 	<resultMap id="orderInfoMap" type="Order" extends="baseOrderMap">
 		<collection property="goodsList" resultMap="orderGoodsMap" />
 	</resultMap>
-	
-	<resultMap id="orderGoodsMap" type="OrderGoodsInfo" extends="com.shizuwei.dal.main.dao.OrderGoodsMapper.baseOrderGoodsMap">
-		<association property="goods" javaType="Goods" resultMap="com.shizuwei.dal.main.dao.GoodsMapper.baseGoodsMap" />
+
+	<resultMap id="orderGoodsMap" type="OrderGoodsInfo"
+		extends="com.shizuwei.dal.main.dao.OrderGoodsMapper.baseOrderGoodsMap">
+		<association property="goods" javaType="Goods"
+			resultMap="com.shizuwei.dal.main.dao.GoodsMapper.baseGoodsMap" />
 	</resultMap>
 
 	<sql id="selectFromSql">
@@ -99,14 +107,16 @@
 		</where>
 	</sql>
 
-	<select id="listWithGoods" parameterType="OrderListRequestDto" resultMap="orderInfoMap">
+	<select id="listWithGoods" parameterType="OrderListRequestDto"
+		resultMap="orderInfoMap">
 		select *
 		<include refid="selectFromSql" />
 		<include refid="selectWhereSql" />
 		webdata.order by order_id asc
 	</select>
 
-	<select id="listOrderIds" parameterType="OrderListRequestDto" resultType="int">
+	<select id="listOrderIds" parameterType="OrderListRequestDto"
+		resultType="int">
 		select o.order_id
 		<include refid="selectFromSql" />
 		<include refid="selectWhereSql" />
@@ -128,21 +138,28 @@
 		</where>
 		order by order_id asc
 	</select>
-	
-	
-	<resultMap type="OrderInfoResponseDto" id="orderInfoResponseDtoMap" extends="baseOrderMap">
+
+
+	<resultMap type="OrderInfoResponseDto" id="orderInfoResponseDtoMap"
+		extends="baseOrderMap">
 		<collection property="orderGoods" resultMap="orderGoodsResponseDtoMap" />
 	</resultMap>
 
 
-	<resultMap  type="OrderGoodsResponseDto" id="orderGoodsResponseDtoMap" extends="com.shizuwei.dal.main.dao.OrderMapper.orderGoodsMap">
+	<resultMap type="OrderGoodsResponseDto" id="orderGoodsResponseDtoMap"
+		extends="com.shizuwei.dal.main.dao.OrderMapper.orderGoodsMap">
 		<result property="imgURL" column="img_url" />
 		<result property="imgName" column="img_name" />
 	</resultMap>
-	
-	
-	<select id="listOrders" parameterType="OrderListRequestDto" resultMap="orderInfoResponseDtoMap">
-		SELECT o.*,img_url,img_name,og.goods_cnt,og.goods_status,og.order_goods_id,og.order_status,og.order_goods_price,goods.goods_freight,goods.goods_id,goods.goods_price FROM webdata.order o JOIN order_goods og ON og.order_id = o.order_id JOIN goods ON goods.goods_id = og.goods_id JOIN img ON img.img_id = goods.img_id
+
+
+	<select id="listOrders" parameterType="OrderListRequestDto"
+		resultMap="orderInfoResponseDtoMap">
+		SELECT
+		o.*,img_url,img_name,og.goods_cnt,og.goods_status,og.order_goods_id,og.order_status,og.order_goods_price,goods.goods_freight,goods.goods_id,goods.goods_price
+		FROM webdata.order o JOIN order_goods og ON og.order_id = o.order_id
+		JOIN goods ON goods.goods_id = og.goods_id JOIN img ON img.img_id =
+		goods.img_id
 		<where>
 			<if test="userId != null">
 				AND o.user_id=#{userId}
@@ -158,5 +175,5 @@
 			</if>
 		</where>
 	</select>
-	
+
 </mapper>

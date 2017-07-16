@@ -11,7 +11,4 @@ public interface GoodsService {
 	
 	void delete(Integer id);
 	
-	//byte[] getImgBuff(Integer goodsId);
-	
-	
 }

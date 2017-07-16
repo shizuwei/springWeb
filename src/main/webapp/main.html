@@ -83,7 +83,7 @@
 							<option value="">全部</option>
 						</select>
 					</span>
-					
+
 					<button type="button" class="btn btn-danger" ng-click="img.update()">
 						<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
 						刷新
@@ -97,7 +97,10 @@
 				<thead>
 					<tr class="row">
 						<th class="col-md-1 col-1  text-center">ID</th>
-						<th class="col-md-1 col-1  text-center">选择<input name="checkbox" type="checkbox" ng-checked="img.checkedAll" ng-click = "img.allCheckClick()"></th>
+						<th class="col-md-1 col-1  text-center">
+							选择
+							<input name="checkbox" type="checkbox" ng-checked="img.checkedAll" ng-click="img.allCheckClick()">
+						</th>
 						<th class="col-md-3 col-3  text-center">图片</th>
 						<th class="col-md-1 col-1  text-center">名称</th>
 						<th class="col-md-6 col-6  text-center">信息</th>
@@ -110,7 +113,7 @@
 							<input name="checkbox" type="checkbox" ng-checked="img.checked">
 						</td>
 						<td class="col-md-3 col-3">
-							<img ng-src="{{img.imgUrl}}" onmouseover="onimgmouseover(this)"  onmouseleave="onimgmouseleave(this)" class="img-rounded">
+							<img ng-src="{{img.imgUrl}}" onmouseover="onimgmouseover(this)" onmouseleave="onimgmouseleave(this)" class="img-rounded">
 						</td>
 						<td class="col-md-1 col-1">{{img.imgName}}</td>
 						<td class="col-md-6 col-6 no-padding">
@@ -130,7 +133,10 @@
 										<td class="col-md-2 col-2  text-center">{{g.size}}</td>
 										<td class="col-md-1 col-1  text-center">{{g.goodsPrice}}</td>
 										<td class="col-md-7 col-6  text-center">
-											<span ng-repeat="order in g.orders">{{order.user.accountNumber}}({{order.orderGoods[0].goodsCnt}}件,{{order.orderGoods[0].orderGoodsPrice}}元,{{order.orderGoods[0].orderStatusStr}},{{order.orderGoods[0].goodsStatusStr}})<br></span>
+											<span ng-repeat="order in g.orders">
+												{{order.user.accountNumber}}({{order.orderGoods[0].goodsCnt}}件,{{order.orderGoods[0].orderGoodsPrice}}元,{{order.orderGoods[0].orderStatusStr}},{{order.orderGoods[0].goodsStatusStr}})
+												<br>
+											</span>
 										</td>
 										<td class="col-md-2 col-2 text-center">
 											<div class="input-group">
@@ -146,7 +152,7 @@
 				</tbody>
 			</table>
 			<div>
-				<ul uib-pagination total-items="totalItems" ng-change="pageselect()" items-per-page="5" ng-model="currentPage" max-size="maxSize" first-text="第一页" previous-text="上一页" next-text="下一页" last-text="最后页" boundary-links="true" boundary-link-numbers="true"  rotate="false"></ul>
+				<ul uib-pagination total-items="totalItems" ng-change="pageselect()" items-per-page="5" ng-model="currentPage" max-size="maxSize" first-text="第一页" previous-text="上一页" next-text="下一页" last-text="最后页" boundary-links="true" boundary-link-numbers="true" rotate="false"></ul>
 			</div>
 		</div>
 
@@ -166,7 +172,7 @@
 							<br>
 							<div class="input-group">
 								<span class="input-group-addon">导入到</span>
-								<input id="img-folder" name="folder" type="text" value="{{folder?folder:today}}"class="form-control" placeholder="{{today}}">
+								<input id="img-folder" name="folder" type="text" value="{{folder?folder:today}}" class="form-control" placeholder="{{today}}">
 								<span class="input-group-addon offset-x-5px">高度</span>
 								<input id="img-width" name="height" type="text" class="form-control" placeholder="单位: px">
 								<span class="input-group-addon offset-x-5px">宽度</span>
@@ -175,7 +181,7 @@
 						</form>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal"  ng-cilck="updateAll()">关闭</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal" ng-cilck="updateAll()">关闭</button>
 						<button type="submit" name="submit" class="btn btn-primary" ng-click="img.upload()">导入图片</button>
 					</div>
 				</div>

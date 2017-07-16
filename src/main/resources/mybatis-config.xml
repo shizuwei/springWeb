@@ -1,43 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>  
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"   
-"http://mybatis.org/dtd/mybatis-3-config.dtd">  
-<configuration>  
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
 
-	<settings>  
-        <!-- 是否启用 数据中 a_column 自动映射 到 java类中驼峰命名的属性。[默认:false] -->  
-        <setting name="mapUnderscoreToCamelCase" value="true" />  
-        <setting name="jdbcTypeForNull" value="NULL" />
-    </settings>  
-  
-    <!-- 实体类,简称 -设置别名 -->  
-    <typeAliases>  
-        <!-- 批量定义别名 ，指定包名，自动扫描包中的类，别名即为类名，首字母大小写无所谓-->
-    	<!-- <package name="com.shizuwei.dal.mai.po"/> -->
-    	<typeAlias alias="Goods" type="com.shizuwei.dal.main.po.Goods"/>
-    	<typeAlias alias="Img" type="com.shizuwei.dal.main.po.Img"/>
-    	<typeAlias alias="Order" type="com.shizuwei.dal.main.po.Order"/>
-    	<typeAlias alias="OrderGoods" type="com.shizuwei.dal.main.po.OrderGoods"/>
-    	<typeAlias alias="User" type="com.shizuwei.dal.main.po.User"/>
-    	<typeAlias alias="OrderInfo" type="com.shizuwei.dal.main.po.OrderInfo"/>
-    	<typeAlias alias="ImgInfo" type="com.shizuwei.dal.main.po.ImgInfo"/>
-    	<typeAlias alias="OrderGoodsInfo" type="com.shizuwei.dal.main.po.OrderGoodsInfo"/>
-    	<typeAlias alias="GoodsInfo" type="com.shizuwei.dal.main.po.GoodsInfo"/>
-    	<typeAlias alias="OrderListRequestDto" type="com.shizuwei.service.dto.request.OrderListRequestDto"/>
-    	<typeAlias alias="ImgListRequestDto" type="com.shizuwei.service.dto.request.ImgListRequestDto"/>
-    	<typeAlias alias="OrderInfoResponseDto" type="com.shizuwei.service.dto.response.OrderInfoResponseDto"/>
-    	<typeAlias alias="OrderGoodsResponseDto" type="com.shizuwei.service.dto.response.OrderGoodsResponseDto"/>
-    	
-    </typeAliases>  
-    <!-- 实体接口映射资源 -->  
-    <!-- 
-        说明：如果xxMapper.xml配置文件放在和xxMapper.java统一目录下，mappers也可以省略，因为org.mybatis.spring.mapper.MapperFactoryBean默认会去查找与xxMapper.java相同目录和名称的xxMapper.xml 
-    -->  
-<!--     <mappers>   -->
-<!--          <package name="com.shizuwei.dal.main.dao"/> -->
-<!--     </mappers>   -->
+	<settings>
+		<!-- 是否启用 数据中 a_column 自动映射 到 java类中驼峰命名的属性。[默认:false] -->
+		<setting name="mapUnderscoreToCamelCase" value="true" />
+		<setting name="jdbcTypeForNull" value="NULL" />
+	</settings>
+
+	<!-- 实体类,简称 -设置别名 -->
+	<typeAliases>
+		<!-- 批量定义别名 ，指定包名，自动扫描包中的类，别名即为类名，首字母大小写无所谓 -->
+		<!-- <package name="com.shizuwei.dal.mai.po"/> -->
+		<typeAlias alias="Goods" type="com.shizuwei.dal.main.po.Goods" />
+		<typeAlias alias="Img" type="com.shizuwei.dal.main.po.Img" />
+		<typeAlias alias="Order" type="com.shizuwei.dal.main.po.Order" />
+		<typeAlias alias="OrderGoods" type="com.shizuwei.dal.main.po.OrderGoods" />
+		<typeAlias alias="User" type="com.shizuwei.dal.main.po.User" />
+		<typeAlias alias="OrderInfo" type="com.shizuwei.dal.main.po.OrderInfo" />
+		<typeAlias alias="ImgInfo" type="com.shizuwei.dal.main.po.ImgInfo" />
+		<typeAlias alias="OrderGoodsInfo" type="com.shizuwei.dal.main.po.OrderGoodsInfo" />
+		<typeAlias alias="GoodsInfo" type="com.shizuwei.dal.main.po.GoodsInfo" />
+		<typeAlias alias="OrderListRequestDto"
+			type="com.shizuwei.service.dto.request.OrderListRequestDto" />
+		<typeAlias alias="ImgListRequestDto"
+			type="com.shizuwei.service.dto.request.ImgListRequestDto" />
+		<typeAlias alias="OrderInfoResponseDto"
+			type="com.shizuwei.service.dto.response.OrderInfoResponseDto" />
+		<typeAlias alias="OrderGoodsResponseDto"
+			type="com.shizuwei.service.dto.response.OrderGoodsResponseDto" />
+
+	</typeAliases>
+	<!-- 实体接口映射资源 -->
+	<!-- 说明：如果xxMapper.xml配置文件放在和xxMapper.java统一目录下，mappers也可以省略，因为org.mybatis.spring.mapper.MapperFactoryBean默认会去查找与xxMapper.java相同目录和名称的xxMapper.xml -->
+	<!-- <mappers> -->
+	<!-- <package name="com.shizuwei.dal.main.dao"/> -->
+	<!-- </mappers> -->
 	<plugins>
-	    <plugin interceptor="com.github.pagehelper.PageInterceptor">
-	        <property name="helperDialect" value="mysql"/>
+		<plugin interceptor="com.github.pagehelper.PageInterceptor">
+			<property name="helperDialect" value="mysql" />
 		</plugin>
 	</plugins>
 </configuration>    

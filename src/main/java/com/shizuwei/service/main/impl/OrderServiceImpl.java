@@ -55,7 +55,7 @@ public class OrderServiceImpl implements OrderService {
 	public Order addOrder(OrderAddRequest orderAddRequest) {
 		DebugUtils.transactionRequired("check trasaction.");
 		Preconditions.checkNotNull(orderAddRequest.getGoodsCnt(), "必须填写商品数量！");
-		Preconditions.checkNotNull(orderAddRequest.getOrderStatus(), "必须填写订单状态！");
+		//Preconditions.checkNotNull(orderAddRequest.getOrderStatus(), "必须填写订单状态！");
 		Preconditions.checkNotNull(orderAddRequest.getGoodsStatus(), "必须填写商品状态！");
 		Preconditions.checkNotNull(orderAddRequest.getGoodsId(), "必须填写商品ID！");
 		Preconditions.checkNotNull(orderAddRequest.getUserId(), "必须填写用户ID！");

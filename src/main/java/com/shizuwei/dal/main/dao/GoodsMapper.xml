@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>  
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.shizuwei.dal.main.dao.GoodsMapper">
-	
+
 	<resultMap type="Goods" id="baseGoodsMap">
 		<id property="goodsId" column="goods_id" />
 		<result property="goodsName" column="goods_name" />
@@ -12,25 +12,26 @@
 		<result property="goodsFreight" column="goods_freight" />
 		<result property="goodsName" column="brand_name" />
 	</resultMap>
-	
+
 	<select id="getById" parameterType="int" resultMap="baseGoodsMap">
 		select *
-		from goods where goods_id=#{id}
+		from
+		goods where goods_id=#{id}
 	</select>
-	
+
 	<select id="getByIds" parameterType="list" resultMap="baseGoodsMap">
 		select *
-		from goods where goods_id in 
-		<foreach item="id" index="index" collection="list" 
-                         open="(" separator="," close=")">
-                        #{id}
-        </foreach>
+		from goods where goods_id in
+		<foreach item="id" index="index" collection="list" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
 	</select>
-	
+
 	<select id="getGoodsCountOfImg" parameterType="int" resultType="int">
 		select count(*) from goods where img_id = #{imgId}
 	</select>
-	
+
 	<select id="list" parameterType="Goods" resultMap="baseGoodsMap">
 		select * from goods
 		<where>
@@ -59,44 +60,46 @@
 		order by goodsId asc
 	</select>
 
-	<insert id="insert" useGeneratedKeys="true" keyProperty="goodsId" parameterType="Goods">
+	<insert id="insert" useGeneratedKeys="true" keyProperty="goodsId"
+		parameterType="Goods">
 		insert into
 		goods(goods_name,goods_price,img_id,goods_number,goods_size,goods_freight,brand_name)
 		values(
-			#{goodsName},
-			#{goodsPrice,jdbcType=NUMERIC},
-			#{imgId,jdbcType=NUMERIC},
-			#{goodsNumber,jdbcType=VARCHAR},
-			#{size,jdbcType=NUMERIC},
-			#{goodsFreight,jdbcType=NUMERIC},
-			#{brandName,jdbcType=VARCHAR}
+		#{goodsName},
+		#{goodsPrice,jdbcType=NUMERIC},
+		#{imgId,jdbcType=NUMERIC},
+		#{goodsNumber,jdbcType=VARCHAR},
+		#{size,jdbcType=NUMERIC},
+		#{goodsFreight,jdbcType=NUMERIC},
+		#{brandName,jdbcType=VARCHAR}
 		)
 	</insert>
-	
-	<insert id="batchInsert" useGeneratedKeys="true" keyProperty="goodsId" parameterType="list">
+
+	<insert id="batchInsert" useGeneratedKeys="true" keyProperty="goodsId"
+		parameterType="list">
 		insert into
 		goods(goods_name,goods_price,img_id,goods_number,goods_size,goods_freight,brand_name)
 		values
 		<foreach collection="list" item="item" index="index"
-             separator=",">
-             (#{item.goodsName},#{item.goodsPrice},#{item.imgId},#{item.goodsNumber},#{item.size},#{item.goodsFreight},#{item.goodsName})
-     	</foreach>	
+			separator=",">
+			(#{item.goodsName},#{item.goodsPrice},#{item.imgId},#{item.goodsNumber},#{item.size},#{item.goodsFreight},#{item.goodsName})
+		</foreach>
 	</insert>
-	
+
 	<delete id="delById" parameterType="int">
 		delete from goods where
 		goods_id=#{goodsId}
 	</delete>
-	
+
 	<delete id="delByIds" parameterType="list">
 		delete from goods where
 		goods_id in
-		<foreach  collection="list" item="id" index="index"
-                         open="(" separator="," close=")">
-                        #{id}
-        </foreach>
+		<foreach collection="list" item="id" index="index" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
 	</delete>
-	
+
 	<update id="update" parameterType="Goods">
 		update goods
 		<set>

@@ -65,5 +65,5 @@
 		select * from user where
 		account_number=#{number}
 	</select>
-	
+
 </mapper>

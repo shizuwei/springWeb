@@ -1,47 +1,45 @@
 table tr td img {
 	/* height: 200px;
 	width: 200px; */
+	
 }
 
-.modal-dialog {  
-    margin: 100px auto;  
-    width:960px;
-}  
+.modal-dialog {
+	margin: 100px auto;
+	width: 960px;
+}
 
-.offset-x-5px{
+.offset-x-5px {
 	position: relative;
-	left:5px;
+	left: 5px;
 }
 
-td.no-padding{
+td.no-padding {
 	padding: 0px !important;
 }
 
-td.no-padding>table{
+td.no-padding>table {
 	border: 0px;
 }
 
-div table{
+div table {
 	position: relative;
-	left:0px;
+	left: 0px;
 }
 
-.input-group span{
-	top:0px;
+.input-group span {
+	top: 0px;
 }
 
-
-
-
-div.item-marks{
+div.item-marks {
 	margin-right: 0px;
 	margin-left: 0px;
 	margin-top: 20px;
 	margin-bottom: 5px;
 }
 
-div.item-marks span{
-	border:1px solid grey;
+div.item-marks span {
+	border: 1px solid grey;
 	line-height: 30px;
 	position: relative;
 	display: inline-block;
@@ -50,87 +48,105 @@ div.item-marks span{
 	padding-right: 10px;
 }
 
-img.left-top{
-	background-color:white;
+img.left-top {
+	background-color: white;
 	border: 0;
 	width: 20px;
 	height: 20px;
-	position:absolute;
-	right: 	-10px;
-	top:	-10px;
+	position: absolute;
+	right: -10px;
+	top: -10px;
 	display: block;
 	padding: 0;
-	margin:0;
+	margin: 0;
 	cursor: pointer;
 	z-index: 20;
 }
 
-caption > button:not(.pull-right){
-	display:inline-block;
-	position:relative;
-	top:-2px;
+caption>button:not (.pull-right ){
+	display: inline-block;
+	position: relative;
+	top: -2px;
 }
 
-.titlebar{
-	margin:0;
-	padding:0px;
-	border:0px;
-	display:inline-block;
+.titlebar {
+	margin: 0;
+	padding: 0px;
+	border: 0px;
+	display: inline-block;
 }
 
-
-.titlebar *{
-	display:inline-block;
-	width:auto;
+.titlebar * {
+	display: inline-block;
+	width: auto;
 }
 
-.titlebar label{
-	padding-left:10px;
+.titlebar label {
+	padding-left: 10px;
 }
 
-.titlebar select{
-	height:34px;
+.titlebar select {
+	height: 34px;
 }
 
-
-
-
-
-
-
-
-
-
-.spin{
--webkit-transform-origin: 50% 50%;
-transform-origin:50% 50%;
--ms-transform-origin:50% 50%; /* IE 9 */
--webkit-animation: spin .8s infinite linear;
--moz-animation: spin .8s infinite linear;
--o-animation: spin .8s infinite linear;
-animation: spin .8s infinite linear;
-}
-@-webkit-keyframes spin {
-0% {
--webkit-transform: rotate(0deg);
-transform: rotate(0deg);
-}
-100% {
--webkit-transform: rotate(359deg);
-transform: rotate(359deg);
-}
-}
-@keyframes spin {
-0% {
--webkit-transform: rotate(0deg);
-transform: rotate(0deg);
-}
-100% {
--webkit-transform: rotate(359deg);
-transform: rotate(359deg);
-}
+.spin {
+	-webkit-transform-origin: 50% 50%;
+	transform-origin: 50% 50%;
+	-ms-transform-origin: 50% 50%; /* IE 9 */
+	-webkit-animation: spin .8s infinite linear;
+	-moz-animation: spin .8s infinite linear;
+	-o-animation: spin .8s infinite linear;
+	animation: spin .8s infinite linear;
 }
 
-.hide{
+@
+-webkit-keyframes spin { 0% {
+	-webkit-transform: rotate(0deg);
+	transform: rotate(0deg);
+}
+
+100%
+{
+-webkit-transform
+:
+ 
+rotate
+(359deg);
+
+
+transform
+:
+ 
+rotate
+(359deg);
+
+
+}
+}
+@
+keyframes spin { 0% {
+	-webkit-transform: rotate(0deg);
+	transform: rotate(0deg);
+}
+
+100%
+{
+-webkit-transform
+:
+ 
+rotate
+(359deg);
+
+
+transform
+:
+ 
+rotate
+(359deg);
+
+
+}
+}
+.hide {
 	display: none;
 }
