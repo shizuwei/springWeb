@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/2002/xmlspec/dtd/2.10/xmlspec.dtd">
+<configuration status="INFO">
+	<Appenders>
+		<Console name="console" target="SYSTEM_OUT">
+			<PatternLayout
+				pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %5p %t %c{1}:%L - %m %X{LOGID}%n" />
+		</Console>
+		<RollingFile name="biz" fileName="./logs/biz.log"
+			filePattern="${sys:catalina.base}/logs/biz.log.%d{yyyy-MM-dd}.log">
+			<PatternLayout>
+				<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %5p %t %c{1}:%L - %m
+					%X{LOGID}%n
+				</pattern>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1"
+					modulate="true" />
+			</Policies>
+		</RollingFile>
+		<RollingFile name="error" fileName="./logs/error.log"
+			filePattern="./logs/error.log.%d{yyyy-MM-dd}.log">
+			<PatternLayout>
+				<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %5p %t %c{1}:%L - %m
+					%X{LOGID}%n
+				</pattern>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1"
+					modulate="true" />
+			</Policies>
+		</RollingFile>
+	</Appenders>
+	<Loggers>
+		<logger name="com.shizuwei" level="INFO" />
+		<Logger name="org.springframework" level="INFO" />
+		<Logger name="org.mybatis" level="INFO" additivity="false" />
+		<AsyncRoot level="info" additivity="false" includeLocation="true">
+			<AppenderRef ref="biz" />
+			<AppenderRef ref="error" level="error" />
+		</AsyncRoot>
+	</Loggers>
+</configuration>
