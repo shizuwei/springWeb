@@ -556,7 +556,7 @@ Array.prototype.removeByAttr = function(attr, attrValues) {
 }; 
 
 Array.prototype.getIndexByAttr = function(attr, attrValue) { 
-	for(var i = 0; i < this.length; ){
+	for(var i = 0; i < this.length; i++){
 		if(this[i][attr] == attrValue){
 			return i;
 		}
@@ -565,7 +565,7 @@ Array.prototype.getIndexByAttr = function(attr, attrValue) {
 }; 
 
 Array.prototype.getElementByAttr = function(attr, attrValue) { 
-	for(var i = 0; i < this.length; ){
+	for(var i = 0; i < this.length; i++){
 		if(this[i][attr] == attrValue){
 			return this[i];
 		}
