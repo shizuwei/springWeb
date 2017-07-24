@@ -1,6 +1,5 @@
 package com.shizuwei.controller;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -32,36 +31,51 @@ public class OrderController {
 
 	@RequestMapping(value = "order/add.do", method = { RequestMethod.POST, RequestMethod.GET })
 	public @ResponseBody Response addOrder(@RequestBody OrderAddRequest order) {
-		logger.debug("order = {}", order);
-		Order orderOf = this.orderService.addOrder(order);
-		Map<String, Object> data = Maps.newHashMap();
-		data.put("order", orderOf);
-		data.put("orderGoodsId", order.getOrderGoodsId());
-		return Response.data(data);
+		try {
+			logger.debug("order = {}", order);
+			Order orderOf = this.orderService.addOrder(order);
+			Map<String, Object> data = Maps.newHashMap();
+			data.put("order", orderOf);
+			data.put("orderGoodsId", order.getOrderGoodsId());
+			return Response.data(data);
+		} catch (Exception ex) {
+			return Response.builder().error(ex.getMessage()).create();
+		}
 	}
-	
-	
+
 	@RequestMapping(value = "order/editOrderGoods.do", method = { RequestMethod.POST, RequestMethod.GET })
 	public @ResponseBody Response editOrderGoods(@RequestBody OrderGoods orderGoods) {
-		logger.debug("orderGoods = {}", orderGoods);
-		this.orderService.editOrderGoods(orderGoods);
-		return Response.create();
+		try {
+			logger.debug("orderGoods = {}", orderGoods);
+			this.orderService.editOrderGoods(orderGoods);
+			return Response.create();
+		} catch (Exception ex) {
+			return Response.builder().error(ex.getMessage()).create();
+		}
 	}
-	
+
 	@RequestMapping(value = "order/delOrderGoods.do", method = { RequestMethod.POST, RequestMethod.GET })
 	public @ResponseBody Response delOrderGoods(@RequestBody OrderGoods orderGoods) {
-		logger.debug("orderGoods = {}", orderGoods);
-		this.orderService.delOrderGoods(orderGoods);
-		return Response.create();
+		try {
+			logger.debug("orderGoods = {}", orderGoods);
+			this.orderService.delOrderGoods(orderGoods);
+			return Response.create();
+		} catch (Exception ex) {
+			return Response.builder().error(ex.getMessage()).create();
+		}
 	}
-	
+
 	@RequestMapping(value = "order/getOrders.do", method = { RequestMethod.POST, RequestMethod.GET })
 	public @ResponseBody Response getOrders(@RequestBody OrderListRequestDto orderListRequestDto) {
-		if(orderListRequestDto.getUserId() == null){
-			orderListRequestDto.setUserId(AuthInfo.getUser().getUserId());
+		try {
+			if (orderListRequestDto.getUserId() == null) {
+				orderListRequestDto.setUserId(AuthInfo.getUser().getUserId());
+			}
+			logger.debug("orderListRequestDto = {}", orderListRequestDto);
+			PageBean<OrderInfoResponseDto> page = this.orderService.getOrders(orderListRequestDto);
+			return Response.data(page.getList()).setPage(page);
+		} catch (Exception ex) {
+			return Response.builder().error(ex.getMessage()).create();
 		}
-		logger.debug("orderListRequestDto = {}", orderListRequestDto);
-		PageBean<OrderInfoResponseDto> page = this.orderService.getOrders(orderListRequestDto);
-		return Response.data(page.getList()).setPage(page);
 	}
 }

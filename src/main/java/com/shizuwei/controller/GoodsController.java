@@ -1,12 +1,10 @@
 package com.shizuwei.controller;
 
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,18 +40,26 @@ public class GoodsController {
 
 	@RequestMapping(value = "goods/add.do", method = { RequestMethod.POST, RequestMethod.GET })
 	public @ResponseBody Response addGoods(@RequestBody Goods goods) {
-		logger.debug("add goods = {}", goods);
-		Integer id = this.goodsService.insert(goods);
-		Map<String, Object> data = Maps.newHashMap();
-		data.put("id", id);
-		return Response.builder().data(data).create();
+		try {
+			logger.debug("add goods = {}", goods);
+			Integer id = this.goodsService.insert(goods);
+			Map<String, Object> data = Maps.newHashMap();
+			data.put("id", id);
+			return Response.builder().data(data).create();
+		} catch (Exception ex) {
+			return Response.builder().error(ex.getMessage()).create();
+		}
 	}
 
 	@RequestMapping(value = "goods/editSize.do", method = { RequestMethod.POST, RequestMethod.GET })
 	public @ResponseBody Response editSize(@RequestBody Goods goods) {
-		logger.debug("add goods = {}", goods);
-		this.goodsService.edit(goods);
-		return Response.builder().create();
+		try {
+			logger.debug("add goods = {}", goods);
+			this.goodsService.edit(goods);
+			return Response.builder().create();
+		} catch (Exception ex) {
+			return Response.builder().error(ex.getMessage()).create();
+		}
 	}
 
 	@RequestMapping(value = "goods/delete.do", method = { RequestMethod.POST, RequestMethod.GET })
@@ -61,36 +67,45 @@ public class GoodsController {
 		try {
 			logger.debug("goods = {}", goods);
 			this.goodsService.delete(goods.getGoodsId());
-			return Response.data(true);
-		} catch (Exception e) {
-			return Response.error(e.getMessage());
+			return Response.builder().data(true).create();
+		} catch (Exception ex) {
+			return Response.builder().error(ex.getMessage()).create();
 		}
 	}
 
 	@RequestMapping(value = "goods/status.do", method = { RequestMethod.POST, RequestMethod.GET })
 	public @ResponseBody Response goodsStatus() {
-		logger.debug("{}", Arrays.asList(GoodsStatus.values()));
-		return Response.data(Arrays.asList(GoodsStatus.values()));
+		try {
+			logger.debug("{}", Arrays.asList(GoodsStatus.values()));
+			return Response.data(Arrays.asList(GoodsStatus.values()));
+		} catch (Exception ex) {
+			return Response.builder().error(ex.getMessage()).create();
+		}
 	}
 
 	@RequestMapping(value = "order/status.do", method = { RequestMethod.POST, RequestMethod.GET })
 	public @ResponseBody Response orderStatus() {
-		ArrayList<OrderStatus> arrayList = new ArrayList<OrderStatus>(Arrays.asList(OrderStatus.values()));
-		return Response.data(arrayList);
-	}
-
-	@RequestMapping(value = "goods/getPic.do", method = { RequestMethod.POST, RequestMethod.GET })
-	public void getPic(@RequestParam(value = "goodsId") Integer goodsId, HttpServletResponse response) {
-		logger.debug("goodsId = {}", goodsId);
-		byte[] buff = null;// goodsService.getImgBuff(goodsId);
 		try {
-			OutputStream outputStream = response.getOutputStream();
-			outputStream.write(buff);
-			response.setContentType("image/*");
-			outputStream.close();
-		} catch (Exception e) {
-			// TODO: handle exception
+			ArrayList<OrderStatus> arrayList = new ArrayList<OrderStatus>(Arrays.asList(OrderStatus.values()));
+			return Response.data(arrayList);
+		} catch (Exception ex) {
+			return Response.builder().error(ex.getMessage()).create();
 		}
 	}
+
+//	@RequestMapping(value = "goods/getPic.do", method = { RequestMethod.POST, RequestMethod.GET })
+//	public void getPic(@RequestParam(value = "goodsId") Integer goodsId, HttpServletResponse response) {
+//		try {
+//			logger.debug("goodsId = {}", goodsId);
+//			byte[] buff = null;// goodsService.getImgBuff(goodsId);
+//			OutputStream outputStream = response.getOutputStream();
+//			outputStream.write(buff);
+//			response.setContentType("image/*");
+//			outputStream.close();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			logger.error(e.toString());
+//		}
+//	}
 
 }

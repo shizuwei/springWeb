@@ -7,6 +7,9 @@
 		<result property="wxName" column="wx_name" />
 		<result property="accountNumber" column="account_number" />
 		<result property="ratio" column="ratio" />
+		<result property="nickName" column="nick_name" />
+		<result property="qq" column="qq" />
+		<result property="lastLogin" column="last_login" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
 	</resultMap>
 
 	<select id="getById" parameterType="int" resultType="User">
@@ -35,6 +38,12 @@
 			<if test="accountNumber !=null">
 				and account_number = #{accountNumber}
 			</if>
+			<if test="qq !=null">
+				and qq = #{qq}
+			</if>
+			<if test="nickName !=null">
+				and nick_name = #{nickName}
+			</if>
 		</where>
 		order by user_id asc
 	</select>
@@ -42,8 +51,8 @@
 	<insert id="insert" useGeneratedKeys="true" keyProperty="userId"
 		parameterType="User">
 		insert into
-		user(wx_name,account_number,ratio)
-		values(#{wxName},#{accountNumber},#{ratio})
+		user(wx_name,account_number,ratio,nick_name,qq)
+		values(#{wxName},#{accountNumber},#{ratio},#{nickName},#{qq})
 	</insert>
 
 	<delete id="delById" parameterType="int">
@@ -55,8 +64,11 @@
 		update user
 		<set>
 			<if test="wxName != null">wx_name=#{wxName},</if>
-			<if test="accountNumber != null">account_number=#{accountNumber}</if>
-			<if test="ratio != null">ratio=#{ratio}</if>
+			<if test="accountNumber != null">account_number=#{accountNumber},</if>
+			<if test="ratio != null">ratio=#{ratio},</if>
+			<if test="qq != null">qq=#{qq},</if>
+			<if test="nickName != null">nick_name=#{nickName},</if>
+			<if test="lastLogin != null">last_login=#{lastLogin}</if>
 		</set>
 		where user_id=#{userId}
 	</update>

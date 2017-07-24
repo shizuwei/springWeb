@@ -15,7 +15,6 @@ import org.springframework.util.CollectionUtils;
 
 import com.github.pagehelper.PageHelper;
 import com.google.common.base.Preconditions;
-import com.shizuwei.controller.common.AuthInfo;
 import com.shizuwei.dal.common.page.PageBean;
 import com.shizuwei.dal.common.page.PaginationContext;
 import com.shizuwei.dal.main.dao.GoodsMapper;
@@ -25,7 +24,6 @@ import com.shizuwei.dal.main.dao.OrderMapper;
 import com.shizuwei.dal.main.dao.UserMapper;
 import com.shizuwei.dal.main.po.Goods;
 import com.shizuwei.dal.main.po.Img;
-import com.shizuwei.dal.main.po.ImgInfo;
 import com.shizuwei.dal.main.po.Order;
 import com.shizuwei.dal.main.po.OrderGoods;
 import com.shizuwei.dal.main.po.User;

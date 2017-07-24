@@ -11,6 +11,10 @@
 <script src="./js/fileinput.min.js"></script>
 <script src="./js/bootstrap.min.js"></script>
 <script src="./js/ui-bootstrap-tpls-2.5.0.min.js"></script>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
 <script src="./js/lib.js"></script>
 <title>网站后台</title>
 </head>
@@ -56,33 +60,26 @@
 						删除
 					</button>
 
-					<span class="titlebar" class="btn btn-success">
-						<label>文件夹：</label>
-						<select class="form-control" ng-model="folder" ng-change="folder" ng-options="f as f for f in folders">
-							<option value="">全部</option>
-						</select>
-					</span>
+					<label>文件夹：</label>
+					<select class="form-control titlebar" ng-model="folder" ng-change="folder" ng-options="f as f for f in folders">
+						<option value="">全部</option>
+					</select>
 
-					<span class="titlebar" class="btn btn-success">
-						<label>用户：</label>
-						<select class="form-control" ng-model="userId" ng-change="userId" ng-options="u.userId as u.accountNumber for u in user.list">
-							<option value="">全部</option>
-						</select>
-					</span>
+					<label>用户：</label>
+					<select select-picker data-live-search="true" ng-model="userId">
+						<option value="">全部</option>
+						<option ng-repeat="u1 in user.list" data-subtext="{{u1.qq}}" data-tokens="{{u1.accountNumber}} {{u1.qq}}" value="{{u1.userId}}">{{u1.accountNumber}}</option>
+					</select>
 
-					<span class="titlebar" class="btn btn-success">
-						<label>订单状态:</label>
-						<select class="form-control" ng-model="orderStatus" ng-change="orderStatus" ng-options="ost.code as ost.note for ost in order.status">
-							<option value="">全部</option>
-						</select>
-					</span>
+					<label>订单状态:</label>
+					<select class="form-control titlebar" style="" ng-model="orderStatus" ng-change="orderStatus" ng-options="ost.code as ost.note for ost in order.status">
+						<option value="">全部</option>
+					</select>
 
-					<span class="titlebar" class="input-group-addon">
-						<label>商品状态:</label>
-						<select class="form-control" ng-model="goodsStatus" ng-change="goodsStatus" ng-options="gst.code as gst.note for gst in good.status">
-							<option value="">全部</option>
-						</select>
-					</span>
+					<label>商品状态:</label>
+					<select class="form-control titlebar" ng-model="goodsStatus" ng-change="goodsStatus" ng-options="gst.code as gst.note for gst in good.status">
+						<option value="">全部</option>
+					</select>
 
 					<button type="button" class="btn btn-danger" ng-click="img.update()">
 						<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
@@ -246,11 +243,12 @@
 					</div>
 					<div class="modal-body">
 						<br>
-						<div class="input-group" ng-repeat="o in good.cur.orders">
+						<div class="input-group" ng-if="good.cur && good.cur.orders && good.cur.orders.length > 0" ng-repeat="o in good.cur.orders">
 							<span class="input-group-addon">数量</span>
 							<input type="text" class="form-control" placeholder="数量" ng-model="o.orderGoods[0].goodsCnt">
 							<span class="input-group-addon">用户</span>
-							<select ng-model="o.orderGoods[0].userId" class="form-control" ng-options="u.userId as u.accountNumber for u in user.list">
+							<select select-picker data-live-search="true" ng-model="o.orderGoods[0].userId" class="form-control" ng-options="user.userId as user.accountNumber for user in user.list">
+								<option value="">未选择</option>
 							</select>
 							<span class="input-group-addon">订单状态</span>
 							<select ng-model="o.orderGoods[0].orderStatus" class="form-control" ng-options="ost.code as ost.note for ost in order.status">
@@ -269,9 +267,15 @@
 							<span class="input-group-addon">数量</span>
 							<input type="text" class="form-control" placeholder="数量" ng-model="curGoodCnt">
 							<span class="input-group-addon">用户</span>
-							<select class="form-control" ng-model="selectedUserId">
+							<!-- 		<select class="form-control" ng-model="selectedUserId">
 								<option ng-repeat="u in user.list" value="{{u.userId}}">{{u.accountNumber}}</option>
+							</select> -->
+
+							<select select-picker class="form-control" data-live-search="true" ng-model="selectedUserId">
+								<option value="">未选择</option>
+								<option ng-repeat="u in user.list" data-subtext="{{u.qq}}" data-tokens="{{u.accountNumber}} {{u.qq}}" value="{{u.userId}}">{{u.accountNumber}}</option>
 							</select>
+
 							<span class="input-group-addon">订单状态</span>
 							<select class="form-control" ng-model="selectedOrderstatus">
 								<option ng-repeat="ost in order.status" value="{{ost.code}}">{{ost.note}}</option>
@@ -295,6 +299,6 @@
 			<!-- /.modal -->
 		</div>
 	</div>
-	<script src="./js/app.js"></script>
+	<script src="./js/app.js?v0.0.1"></script>
 </body>
 </html>

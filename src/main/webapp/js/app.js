@@ -1,5 +1,17 @@
 var app = angular.module("app", ['ui.bootstrap']);
 
+app.directive('selectPicker', ['$timeout', function($timeout){
+    return {
+        restrict: 'A',
+        link:function(scope, elem){
+          $timeout(function() {
+            elem.selectpicker({showSubtext:true});
+          }, 100);
+        }
+      };
+  }]);
+
+
 app.controller('myController', function($scope, $http, switchSerivce, imgService) {
 	$scope.user =  {};
 	$scope.img =   {};
@@ -21,7 +33,7 @@ app.controller('myController', function($scope, $http, switchSerivce, imgService
 		console.log("updateAll");
 		updateCheckStatus($scope);
 	}
-
+	
 	function init(){
 		
 		$scope.today = new Date().format("yyyy-MM-dd");
@@ -132,7 +144,7 @@ app.controller('myController', function($scope, $http, switchSerivce, imgService
 
     	 if (editImgs.length == 1) {
     	 	$scope.img.cur = editImgs[0];
-    	 	$scope.orderStatus = -1;
+    	 	$scope.orderStatus = null;
     	 	$("#editImg").modal({keyboard: true})
     	 }
     }
@@ -150,7 +162,7 @@ app.controller('myController', function($scope, $http, switchSerivce, imgService
     
     $scope.img.addGood = function() {
 
-    	console.log("input:"+$scope.img.cur.price+$scope.img.cur.size);
+    	console.log("input:"+$scope.img.cur.inputPrice+$scope.img.cur.inputSize);
     	var cur = $scope.img.cur;
     	var obj = {imgId:cur.imgId,size:cur.inputSize,goodsPrice:cur.inputPrice,goodsName:cur.imgName,goodsFreight:cur.inputFreight};
     	
@@ -245,8 +257,8 @@ app.controller('myController', function($scope, $http, switchSerivce, imgService
 		$('#editGood').modal({
 		  keyboard: false,
 		})
-		$scope.img.update();
-		console.log("good.edit " + img.name + JSON.stringify(g));
+		// $scope.img.update();
+		console.log("good.edit " + img.imgName + JSON.stringify(g));
 	}
 	
 	
@@ -575,9 +587,9 @@ Array.prototype.getElementByAttr = function(attr, attrValue) {
 
 
 function onimgmouseover (target){
-	//$("img").css({border:"solid 2px black"});
+	// $("img").css({border:"solid 2px black"});
 }
 
 function onimgmouseleave (target){
-	//$("img").css({border:"solid 1px red"});
+	// $("img").css({border:"solid 1px red"});
 }

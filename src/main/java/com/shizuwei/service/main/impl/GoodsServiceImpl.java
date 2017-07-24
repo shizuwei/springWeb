@@ -8,6 +8,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +44,8 @@ public class GoodsServiceImpl implements GoodsService {
 
 	@Override
 	public Integer insert(Goods goods) {
+		Preconditions.checkArgument(StringUtils.isNoneBlank(goods.getSize()), "尺寸不能为空！");
+		Preconditions.checkNotNull(goods.getImgId(), "图片ID不能为空！");
 		this.goodsMapper.insert(goods);
 		return goods.getGoodsId();
 	}
@@ -89,9 +92,11 @@ public class GoodsServiceImpl implements GoodsService {
 		return newer.getGoodsPrice() != null && !newer.getGoodsPrice().equals(old.getGoodsPrice());
 	}
 
-/*	private static boolean isGoodsFreightChanged(Goods newer, Goods old) {
-		return newer.getGoodsFreight() != null && !newer.getGoodsFreight().equals(old.getGoodsFreight());
-	}*/
+	/*
+	 * private static boolean isGoodsFreightChanged(Goods newer, Goods old) {
+	 * return newer.getGoodsFreight() != null &&
+	 * !newer.getGoodsFreight().equals(old.getGoodsFreight()); }
+	 */
 
 	@Override
 	public void edit(Goods goods) {

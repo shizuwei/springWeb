@@ -6,7 +6,7 @@ import com.shizuwei.controller.common.dto.PageDto;
 import com.shizuwei.dal.common.page.PageBean;
 
 public class Response implements Serializable {
-	public static final int OK = 200, ERROR = -1;
+	public static final int OK = 200, ERROR = -1, NOT_LGOIN = 400;
 
 	private static final long serialVersionUID = -3458675766341550281L;
 	private int status;
@@ -17,19 +17,24 @@ public class Response implements Serializable {
 	public Response() {
 		status = OK;
 	}
-
+	
 	public static class ResponseBuilder {
 		private Object data;
 		private String msg;
 		private PageDto pageDto;
-
+		private int status;
 		public ResponseBuilder data(Object data) {
 			this.data = data;
 			return this;
 		}
 
 		public ResponseBuilder error(String msg) {
+			return error(msg, ERROR);
+		}
+		
+		public ResponseBuilder error(String msg, int status) {
 			this.msg = msg;
+			this.status = status;
 			return this;
 		}
 
@@ -56,6 +61,7 @@ public class Response implements Serializable {
 			response.setData(this.data);
 			response.setMsg(msg);
 			response.setPage(pageDto);
+			response.setStatus(this.status);
 			return response;
 		}
 	}
